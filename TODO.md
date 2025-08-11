@@ -2,21 +2,43 @@ Diabetes Readmission Prediction — TODOs (for TODO Tree)
 
 Note: Each actionable line starts with "TODO:" so it appears in the TODO Tree. Priority tags: [P0]=critical, [P1]=high, [P2]=nice, [Stretch]=optional. Weeks indicated as [W1]–[W4].
 
-Week 1 — Data, Repo, Baseline
+================================================================================
+🎯 THIS WEEK DELIVERABLES (Week 1: Aug 11-17, 2025)
+================================================================================
 
-TODO: [W1][P0] Create repo scaffolding: src/, notebooks/, data/, models/, configs/, tests/, app/, .github/workflows/
-TODO: [W1][P0] Add dependencies file (pyproject.toml or requirements.txt): pandas, numpy, scikit-learn, lightgbm, xgboost, catboost, shap, optuna, mlflow, fastapi, uvicorn, pydantic, evidently, pandera, plotly, streamlit, pytest, black, isort, ruff/flake8, pre-commit
-TODO: [W1][P0] Initialize MLflow locally; connect Azure ML workspace for remote tracking later
-TODO: [W1][P0] Implement data loader for diabetic_data.csv with explicit dtypes and memory-safe reading
-TODO: [W1][P0] Define target: readmission_30d = 1 if readmitted == "<30" else 0
-TODO: [W1][P0] Draft pandera schema for critical columns (ranges, categories, nullability)
-TODO: [W1][P0] EDA notebook: missingness, class balance, leakage checks, target stability; save plots to reports/
-TODO: [W1][P0] Decide feature strategy: CatBoost native categoricals vs one-hot/target encoding; scaling needs
-TODO: [W1][P0] Implement minimal feature pipeline (impute, encode, scale where needed)
-TODO: [W1][P0] Baseline model: Logistic Regression with CV; log params/metrics/artifacts to MLflow
-TODO: [W1][P1] Configure pre-commit with black, isort, ruff/flake8; enable on staged files
-TODO: [W1][P1] Unit tests: data loader and pandera schema validation (pytest)
-TODO: [W1][P2] Optional: Set up DVC for dataset tracking (remote optional)
+✅ COMPLETED TODAY (Aug 11):
+✅ Environment setup and virtual environment
+✅ Git repository initialization
+✅ All dependencies installed (including LightGBM OpenMP fix)
+✅ MLflow server running on port 5001
+✅ Project structure and scaffolding complete
+✅ Pre-commit hooks configured
+✅ Makefile commands working
+
+📋 REMAINING WEEK 1 TASKS (Priority Order):
+
+TODO: [W1][P0] 🔍 START DATA EXPLORATION: Open EDA notebook and begin analysis
+TODO: [W1][P0] 📊 LOAD DATASET: Implement data loader for diabetic_data.csv with memory optimization
+TODO: [W1][P0] 🎯 CREATE TARGET: Define readmission_30d = 1 if readmitted == "<30" else 0
+TODO: [W1][P0] 📋 DATA VALIDATION: Draft pandera schema for critical columns (ranges, categories, nullability)
+TODO: [W1][P0] 📈 COMPLETE EDA: Missingness, class balance, leakage checks, target stability; save plots to reports/
+TODO: [W1][P0] 🏗️ FEATURE STRATEGY: Decide CatBoost native categoricals vs one-hot/target encoding approach
+TODO: [W1][P0] ⚙️ FEATURE PIPELINE: Implement minimal pipeline (impute, encode, scale where needed)
+TODO: [W1][P0] 🤖 BASELINE MODEL: Train Logistic Regression with CV; log to MLflow
+TODO: [W1][P1] 🧪 UNIT TESTS: Create tests for data loader and pandera schema validation
+TODO: [W1][P2] 📚 OPTIONAL: Set up DVC for dataset tracking
+
+🎯 WEEK 1 SUCCESS CRITERIA:
+- EDA notebook complete with insights
+- Target variable properly defined
+- Data validation schemas in place
+- Baseline model trained and logged to MLflow
+- Feature engineering strategy decided
+- Ready for Week 2 model development
+
+================================================================================
+📅 FULL PROJECT TIMELINE (Weeks 2-4)
+================================================================================
 
 Week 2 — GBMs, HPO, Selection
 
@@ -74,3 +96,15 @@ Stretch Goals (only if ahead of schedule)
 TODO: [Stretch] AKS + KEDA autoscaling
 TODO: [Stretch] Power BI monitoring dashboard with live connection
 TODO: [Stretch] Advanced counterfactual analysis at scale
+
+================================================================================
+🚀 TOMORROW'S STARTING POINT (Aug 12, 2025)
+================================================================================
+
+1. Open terminal and activate environment: `source venv/bin/activate`
+2. Start MLflow: `make mlflow-ui` (or it's already running)
+3. Open EDA notebook: `jupyter notebook notebooks/01_initial_eda.ipynb`
+4. Begin with first task: Load dataset and create target variable
+5. Track progress in MLflow for all experiments
+
+Good luck! 🎯
