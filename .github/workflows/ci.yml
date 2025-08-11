@@ -1,0 +1,90 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+    
+    - name: Run linting
+      run: |
+        black --check src/ tests/
+        isort --check-only src/ tests/
+        ruff check src/ tests/
+    
+    - name: Run tests with coverage
+      run: |
+        pytest tests/ --cov=src --cov-report=xml --cov-report=term-missing
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Log in to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
+        username: ${{ secrets.AZURE_ACR_USERNAME }}
+        password: ${{ secrets.AZURE_ACR_PASSWORD }}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/diabetes-readmission:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to Azure Container Apps
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        appSourcePath: ${{ github.workspace }}
+        acrName: ${{ secrets.AZURE_ACR_NAME }}
+        acrUsername: ${{ secrets.AZURE_ACR_USERNAME }}
+        acrPassword: ${{ secrets.AZURE_ACR_PASSWORD }}
+        containerAppName: diabetes-readmission
+        resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP }}
+        imageToDeploy: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/diabetes-readmission:${{ github.sha }}

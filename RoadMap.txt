@@ -1,0 +1,83 @@
+Status update: I’ll outline the full plan from EDA to deployment, with exact tools, workflows, and why this approach fits your 30-day/6h/day constraint.
+Stack at a glance
+Cloud/Platform: Azure ML (workspace, compute), Azure Container Registry, Azure Container Apps/ACI (deploy), optional Azure Monitor/App Insights
+MLOps: MLflow (tracking/registry), Optuna (HPO), Pandera (data validation), DVC [optional], pre-commit + ruff/black/isort, pytest
+Modeling: scikit-learn (baseline), LightGBM/XGBoost/CatBoost (primary), SHAP (explainability), fairlearn (fairness)
+Serving/UI: FastAPI (API), Streamlit (dashboard)
+Monitoring: Evidently AI (drift/perf reports), MLflow metrics, GitHub Actions cron
+GenAI: Azure OpenAI (EDA and model result narratives, per-patient explanations)
+Docs/Visuals: MkDocs or README suite, FastAPI OpenAPI, Plotly/Seaborn/SHAP plots
+How we’ll execute (end-to-end)
+EDA and data validation
+Load diabetic_data.csv with explicit dtypes; downcast numerics.
+Define label: readmission_30d = (readmitted == "<30").
+Stratified train/validation/test split; deduplicate patient encounters; check leakage (e.g., post-discharge features).
+Validation with Pandera: schema for ranges, categorical vocab, nullability.
+EDA with Plotly/Seaborn: class balance, missingness, correlations, pivotal slices (diagnosis, demographics). Save figures to reports/.
+Feature engineering
+Two paths:
+CatBoost: use native categorical handling, minimal encoding.
+LightGBM/XGBoost: one-hot/target encoding for categoricals; mean-impute; optional scaling for LR baseline.
+Ensure time-aware features don’t leak future info. Persist transformations as sklearn Pipeline.
+Experimentation, tracking, and HPO
+Baseline: Logistic Regression (class_weight or threshold tuning).
+Primary: LightGBM, XGBoost, CatBoost with early stopping.
+Track all runs, params, artifacts with MLflow; store best model in MLflow Model Registry with tags (data hash, seed, feature set).
+HPO via Optuna (50–100 trials max per model) with fixed budgets; early stopping to respect timebox.
+Evaluation and interpretability
+Metrics: ROC AUC, PR AUC, F1, calibration, confusion matrix; threshold optimized for business cost.
+SHAP: global (summary, beeswarm) and local explanations; export per-patient reason codes.
+Statistical comparisons: DeLong for AUC deltas; confidence intervals for key metrics.
+Fairness and ethics
+Use fairlearn: TPR/FPR, demographic parity difference, equalized odds across age/race/gender bins.
+Bias report with metrics, mitigation options (thresholds by group, class weights, reweighting), and limitations.
+Model Card + Datasheet for dataset; document risks and intended use.
+GenAI integration (scoped)
+Azure OpenAI generates:
+EDA narrative from stored plots/metrics.
+Model summary with strengths/limitations.
+Per-patient explanation text using SHAP features (“because A1C high, insulin regimen changed…”).
+PHI safety: redact identifiers; never send raw identifiers to LLM.
+Application and deployment
+Streamlit dashboard: CSV upload, batch inference, risk distribution, threshold slider, per-patient explanations, downloadable results + narrative.
+FastAPI service: /health, /predict with Pydantic schemas; load best model artifact (from MLflow or artifacts/).
+Containerization: multi-stage Dockerfile; image stored in Azure Container Registry.
+Deployment target: Azure Container Apps or Azure Container Instances (simpler than AKS). Add autoscale later if needed.
+Monitoring and alerting
+Batch drift monitoring with Evidently: data drift, prediction drift; periodic job via GitHub Actions cron (daily/weekly) reading sample inputs.
+Performance checks: recompute metrics when labels arrive; store reports under reports/monitoring/ and log summary to MLflow.
+Optional: wire App Insights logs/metrics for API latency and error rates.
+CI/CD and automation
+GitHub Actions:
+CI: lint (ruff/black/isort), tests (pytest, coverage >= 80%), build Docker, ephemeral e2e smoke test.
+CD: on tag/main, build/push Docker to ACR, deploy to ACA/ACI with gated environments (dev → staging → prod).
+Cron workflows: schedule Evidently drift job; rotate reports artifacts.
+Documentation and visualizations
+MkDocs or a structured README suite covering: data, features, modeling decisions, metrics, fairness, API usage, ops runbook.
+FastAPI auto-docs (OpenAPI/Swagger) for endpoints.
+Include model card, dataset datasheet, system diagram, and monitoring snapshots.
+Business and academic value
+Business impact
+Cost model: translate confusion matrix to cost savings (e.g., average readmission cost, intervention cost). Show net savings at selected thresholds.
+Ops metrics: p95 latency < 100 ms, uptime target > 99.5%, drift alerts. Present a deployment/runbook for clinical integration feasibility.
+Academic impact
+Rigorous baselines vs GBMs (CatBoost/LightGBM/XGBoost) with confidence intervals, DeLong tests.
+Fairness analysis with quantitative metrics and mitigations.
+Reproducibility: seeds, data hashes, MLflow runs, pinned environments. Clear limitations and future work.
+Why this approach
+Time-efficient and production-focused: GBMs outperform dense NNs on tabular healthcare data with far less tuning; fastest path to AUC ≥ 0.75.
+Lean MLOps that matters: MLflow + Optuna + Evidently deliver the core lifecycle without heavy ops. ACA/ACI reduces operational load vs AKS.
+Compliance-aware: explicit validation, fairness, and documentation; PHI-safe logging and LLM usage.
+Clear deliverables: dashboard + API + monitoring + docs that demonstrate both business ROI and academic rigor.
+What we’ll use specifically
+Cloud: Azure ML (workspace/compute), ACR, Container Apps/ACI, optional App Insights.
+MLOps: MLflow, Optuna, Pandera, pre-commit, pytest, ruff/black/isort, DVC [optional].
+Modeling: scikit-learn, LightGBM, XGBoost, CatBoost; SHAP; fairlearn.
+Serving/UI: FastAPI, Streamlit.
+Monitoring: Evidently AI, MLflow metrics, GH Actions cron.
+GenAI: Azure OpenAI for narratives and explanations.
+Docs/Visuals: MkDocs/README, Plotly/Seaborn/SHAP, FastAPI OpenAPI.
+If you want, I can scaffold the repo (dirs, requirements.txt, pre-commit, CI skeleton) and a starter EDA notebook now.
+Provided an end-to-end execution plan, tools, and reasons behind each choice.
+Covered EDA→modeling→interpretability→fairness→serving→deployment→monitoring→CI/CD→docs.
+Mapped specific frameworks for each need (Azure ML, MLflow, Optuna, Evidently, fairlearn, FastAPI, Streamlit, Azure OpenAI).
