@@ -32,6 +32,8 @@ env/
 ENV/
 env.bak/
 venv.bak/
+.venv/
+.ENV/
 
 # Environment variables
 .env
@@ -75,3 +77,33 @@ logs/
 # Temporary files
 *.tmp
 *.temp
+
+# Pre-commit cache
+.pre-commit-cache/
+
+# Data files (large files)
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+
+# Model files
+*.joblib
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.onnx
+*.pb
+
+# MLflow artifacts
+mlruns/
+mlartifacts/
+mlflow.db
+
+# Azure ML
+.azureml/

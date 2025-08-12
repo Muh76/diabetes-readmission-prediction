@@ -46,7 +46,7 @@ deploy: ## Deploy to Azure Container Apps
 		--image your-acr-name.azurecr.io/diabetes-readmission:latest
 
 mlflow-ui: ## Start MLflow tracking server
-	mlflow ui --host 0.0.0.0 --port 5000
+	mlflow ui --host 0.0.0.0 --port 5001
 
 notebook: ## Start Jupyter notebook
 	jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
