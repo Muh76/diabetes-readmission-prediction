@@ -1,0 +1,5 @@
+socioeconomic_risk,Patient_Count,Readmission_Rate,Avg_LOS,Most_Common_Insurance
+Low,50534,0.108,4.317,Other
+Medium,17058,0.114,4.49,Other
+High,27669,0.117,4.419,Medicaid
+Critical,4633,0.118,4.685,Medicaid

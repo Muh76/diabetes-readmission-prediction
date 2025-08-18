@@ -1,0 +1,5 @@
+clinical_risk,Patient_Count,Readmission_Rate,Avg_LOS,Avg_Medications
+Low,4077,0.07,2.745,10.665
+Medium,27091,0.094,3.7,13.724
+High,70500,0.121,4.758,17.207
+Critical,98,0.143,5.306,21.653

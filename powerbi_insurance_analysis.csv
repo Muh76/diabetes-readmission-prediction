@@ -1,0 +1,12 @@
+insurance_category,Patient_Count,Readmission_Rate,Avg_LOS,Avg_Socioeconomic_Risk
+Blue Cross,4655,0.092,3.687,1.159
+Commercial Insurance,4470,0.092,4.084,1.131
+Disability,549,0.117,4.179,1.168
+Health Maintenance Organization,6274,0.103,4.018,1.123
+Medicaid,32439,0.117,4.484,3.106
+Medicare,3532,0.118,4.362,2.292
+Other,41304,0.114,4.578,1.208
+Other Government,1033,0.132,3.854,1.239
+Self Pay,5007,0.102,4.045,1.097
+State Insurance,55,0.127,3.655,1.091
+Unknown,2448,0.093,4.1,1.005

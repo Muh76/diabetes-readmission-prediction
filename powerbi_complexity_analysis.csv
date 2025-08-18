@@ -1,0 +1,5 @@
+complexity_level,Patient_Count,Readmission_Rate,Avg_LOS,Avg_Procedures
+Low,10772,0.079,2.518,0.363
+Medium,57638,0.109,3.796,0.977
+High,27221,0.125,5.584,1.966
+Critical,6135,0.127,8.058,3.681
