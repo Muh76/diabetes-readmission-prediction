@@ -1,0 +1,39 @@
+{
+  "analysis_date": "2025-08-19 16:59:19",
+  "model_performance": {
+    "current_roc_auc": 0.9531726243218395,
+    "baseline_roc_auc": 0.75,
+    "improvement_percentage": 20.317262432183945
+  },
+  "risk_assessment": {
+    "overall_risk_score": 0.8999999999999999,
+    "risk_level": "Medium",
+    "risk_categories": {
+      "Model Performance Risk": 0.2875,
+      "Operational Risk": 0.13,
+      "Regulatory Risk": 0.19,
+      "Financial Risk": 0.1425,
+      "Technical Risk": 0.15000000000000002
+    }
+  },
+  "business_impact": {
+    "annual_cost_savings": 58778977.983004354,
+    "annual_quality_bonus": 1175579.559660087,
+    "annual_penalty_avoidance": 1763369.3394901305,
+    "total_annual_impact": 61717926.88215457
+  },
+  "financial_projections": {
+    "total_implementation_cost": 245000,
+    "total_revenue": 151297089.3282532,
+    "net_profit": 151052089.3282532,
+    "roi_percentage": 61653.914011531924,
+    "break_even_months": 0.05839045351324566
+  },
+  "recommendations": [
+    "\u2705 Proceed with deployment - Strong positive ROI projected",
+    "\u2705 Implement phased rollout to minimize operational risk",
+    "\u2705 Establish continuous monitoring for model performance",
+    "\u2705 Regular financial tracking and ROI validation",
+    "\u2705 Clinical validation and regulatory compliance monitoring"
+  ]
+}
