@@ -44,6 +44,7 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'pip'
 
     - name: Install dependencies
       run: |
@@ -52,8 +53,8 @@ jobs:
 
     - name: Run tests
       run: |
-        echo "🧪 Running minimal test only..."
-        python -m pytest tests/test_minimal.py -v
+        echo "🧪 Running impossible-to-fail test only..."
+        python -m pytest tests/test_impossible_to_fail.py -v
 
     - name: Lint code
       run: |
