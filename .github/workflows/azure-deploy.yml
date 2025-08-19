@@ -52,8 +52,7 @@ jobs:
 
     - name: Run tests
       run: |
-        cd notebooks
-        python -m pytest -v --tb=short
+        python -m pytest tests/ -v --tb=short
 
     - name: Lint code
       run: |
