@@ -1,7 +1,7 @@
-name: "🚀 AZURE DEPLOYMENT: ML API to Azure Container Apps"
+name: "🚀 AZURE DEPLOYMENT: ML API to Azure Container Apps - V2.0"
 
 on:
-  # 🎯 PRIMARY WORKFLOW: This is the ONLY workflow that should run for Azure deployment
+  # 🎯 PRIMARY WORKFLOW V2.0: This is the ONLY workflow that should run for Azure deployment - FORCE REFRESH
   push:
     branches: [ master, main ]
     paths:
