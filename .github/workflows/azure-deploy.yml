@@ -52,9 +52,6 @@ jobs:
 
     - name: Run tests
       run: |
-        echo "🧪 Testing basic functionality..."
-        python tests/test_simple.py
-
         echo "🧪 Running pytest on simple tests..."
         python -m pytest tests/test_simple.py -v
 
