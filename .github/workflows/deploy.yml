@@ -1,15 +1,7 @@
-name: ML API CI/CD Pipeline
+name: ML API Local Development Pipeline (Manual Only)
 
 on:
-  push:
-    branches: [ master, main ]
-    paths:
-      - 'notebooks/app.py'
-      - 'requirements.txt'
-      - 'Dockerfile'
-      - 'docker-compose.yml'
-  pull_request:
-    branches: [ master, main ]
+  # Disabled automatic triggers - only manual dispatch for local development
   workflow_dispatch:
 
 env:
