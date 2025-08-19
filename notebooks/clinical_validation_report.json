@@ -1,0 +1,112 @@
+{
+  "validation_date": "2025-08-19 16:50:23",
+  "model_performance": {
+    "roc_auc": 0.9531726243218395,
+    "accuracy": 0.9312299524388895,
+    "precision": 0.9952365830422356,
+    "recall": 0.8666076761420197
+  },
+  "risk_distribution": {
+    "High Risk (>70%)": "15488",
+    "Moderate Risk (40-70%)": "485",
+    "Low Risk (<40%)": "20191"
+  },
+  "clinical_validation": {
+    "Medication": {
+      "features": [
+        "num_medications"
+      ],
+      "count": 1,
+      "status": "\u2705 Valid"
+    },
+    "Laboratory": {
+      "features": [
+        "num_lab_procedures"
+      ],
+      "count": 1,
+      "status": "\u2705 Valid"
+    },
+    "Procedures": {
+      "features": [
+        "num_procedures"
+      ],
+      "count": 1,
+      "status": "\u2705 Valid"
+    },
+    "Demographics": {
+      "features": [
+        "age_midpoint"
+      ],
+      "count": 1,
+      "status": "\u2705 Valid"
+    },
+    "Clinical": {
+      "features": [
+        "number_diagnoses",
+        "clinical_risk_score"
+      ],
+      "count": 2,
+      "status": "\u2705 Valid"
+    },
+    "Utilization": {
+      "features": [
+        "time_in_hospital",
+        "service_utilization_score"
+      ],
+      "count": 2,
+      "status": "\u2705 Valid"
+    },
+    "Emergency": {
+      "features": [
+        "number_emergency",
+        "number_inpatient",
+        "number_outpatient"
+      ],
+      "count": 3,
+      "status": "\u2705 Valid"
+    }
+  },
+  "compliance_check": {
+    "Data Privacy": "\u2705 Compliant - No PII in features",
+    "Clinical Guidelines": "\u2705 Compliant - Features align with diabetes care",
+    "Model Interpretability": "\u2705 Compliant - SHAP/LIME explanations available",
+    "Risk Stratification": "\u2705 Compliant - Clear risk categories defined",
+    "Documentation": "\u2705 Compliant - Feature meanings documented"
+  },
+  "risk_mitigation": {
+    "High Risk Patients": [
+      "Immediate follow-up within 7 days",
+      "Enhanced care coordination",
+      "Medication reconciliation",
+      "Social support assessment"
+    ],
+    "Moderate Risk Patients": [
+      "Follow-up within 14 days",
+      "Standard care coordination",
+      "Medication review",
+      "Lifestyle counseling"
+    ],
+    "Low Risk Patients": [
+      "Routine follow-up within 30 days",
+      "Standard diabetes education",
+      "Preventive care recommendations"
+    ]
+  },
+  "clinical_metrics": {
+    "Total Patients": 36164,
+    "High Risk Rate": "42.8%",
+    "Moderate Risk Rate": "1.3%",
+    "Low Risk Rate": "55.8%",
+    "Clinical Features": 11,
+    "Compliance Score": "5/5"
+  },
+  "recommendations": [
+    "\u2705 Model demonstrates strong clinical interpretability",
+    "\u2705 Risk stratification aligns with healthcare standards",
+    "\u2705 Feature set covers essential diabetes care domains",
+    "\u2705 Compliance requirements met for clinical deployment",
+    "\u26a0\ufe0f  Monitor model performance in real-world settings",
+    "\u26a0\ufe0f  Regular clinical validation with domain experts",
+    "\u26a0\ufe0f  Update risk thresholds based on local population"
+  ]
+}
