@@ -30,3 +30,10 @@ python-multipart>=0.0.6
 pytest>=7.0.0
 pytest-asyncio>=0.21.0
 httpx>=0.24.0
+pytest-cov>=4.1.0
+
+# Additional packages that might be needed by pytest
+shap>=0.42.0
+fairlearn>=0.8.0
+optuna>=3.2.0
+mlflow>=2.7.0
