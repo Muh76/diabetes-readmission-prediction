@@ -12,10 +12,10 @@ def test_basic_math():
 
 def test_file_structure():
     """Test that required files exist"""
-    # Check if key files exist (from tests directory)
-    assert os.path.exists("../notebooks/app.py"), "app.py should exist"
-    assert os.path.exists("../requirements.txt"), "requirements.txt should exist"
-    assert os.path.exists("../Dockerfile"), "Dockerfile should exist"
+    # Check if key files exist (from root directory)
+    assert os.path.exists("notebooks/app.py"), "app.py should exist"
+    assert os.path.exists("requirements.txt"), "requirements.txt should exist"
+    assert os.path.exists("Dockerfile"), "Dockerfile should exist"
     print("✅ Required files exist")
 
 
@@ -38,7 +38,7 @@ def test_python_imports():
 
 def test_workflow_files():
     """Test that workflow files exist"""
-    workflow_dir = "../.github/workflows"
+    workflow_dir = ".github/workflows"
     assert os.path.exists(workflow_dir), "Workflows directory should exist"
 
     workflow_files = os.listdir(workflow_dir)
