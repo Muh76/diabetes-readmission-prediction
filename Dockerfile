@@ -28,9 +28,6 @@ COPY notebooks/app.py ./app.py
 COPY models/ ./models/
 COPY feature_scaler.pkl ./
 
-# Remove large model files that might cause issues
-RUN find models/ -name "*_optimized.pkl" -size +50M -delete
-
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app && \
     chown -R app:app /app

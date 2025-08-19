@@ -1,4 +1,4 @@
-# Exclude large model files that cause Docker build issues
+# Exclude only the problematic large model files
 models/random_forest_optimized.pkl
 models/*_optimized.pkl
 
