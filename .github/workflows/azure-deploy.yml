@@ -1,0 +1,216 @@
+name: Deploy ML API to Azure Container Apps
+
+on:
+  push:
+    branches: [ master, main ]
+    paths:
+      - 'notebooks/app.py'
+      - 'requirements.txt'
+      - 'Dockerfile'
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - staging
+        - production
+
+env:
+  REGISTRY: diabetesmlacr.azurecr.io
+  IMAGE_NAME: diabetes-ml-api
+  RESOURCE_GROUP: Muh_Azure_ML
+  LOCATION: eastus2
+  CONTAINER_APP_ENV: diabetes-ml-env
+  CONTAINER_APP_NAME: diabetes-ml-api
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio httpx
+
+    - name: Run tests
+      run: |
+        cd notebooks
+        python -m pytest -v --tb=short
+
+    - name: Lint code
+      run: |
+        pip install black isort ruff
+        black --check notebooks/app.py
+        isort --check-only notebooks/app.py
+        ruff check notebooks/app.py
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy-to-azure:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set Azure subscription
+      run: |
+        az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        az account show
+
+    - name: Install Azure Container Apps extension
+      run: |
+        az extension add --name containerapp --yes
+
+    - name: Deploy to Azure Container Apps
+      run: |
+        # Get ACR login server
+        ACR_LOGIN_SERVER=$(az acr show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query loginServer --output tsv)
+
+        # Check if container app exists
+        if az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} &> /dev/null; then
+          echo "Updating existing Container App..."
+          az containerapp update \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
+            --registry-server $ACR_LOGIN_SERVER \
+            --registry-username ${{ secrets.ACR_USERNAME }} \
+            --registry-password ${{ secrets.ACR_PASSWORD }}
+        else
+          echo "Creating new Container App..."
+          az containerapp create \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --environment ${{ env.CONTAINER_APP_ENV }} \
+            --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
+            --target-port 8000 \
+            --ingress external \
+            --allow-insecure \
+            --cpu 1.0 \
+            --memory 2.0Gi \
+            --min-replicas 1 \
+            --max-replicas 3 \
+            --env-vars PYTHONPATH=/app PORT=8000 LOG_LEVEL=INFO \
+            --registry-server $ACR_LOGIN_SERVER \
+            --registry-username ${{ secrets.ACR_USERNAME }} \
+            --registry-password ${{ secrets.ACR_PASSWORD }}
+        fi
+
+    - name: Get deployment info
+      run: |
+        FQDN=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.configuration.ingress.fqdn --output tsv)
+        echo "🌐 API deployed to: https://$FQDN"
+        echo "📊 Health check: https://$FQDN/health"
+        echo "📚 API docs: https://$FQDN/docs"
+
+        # Set output for next steps
+        echo "api_url=https://$FQDN" >> $GITHUB_OUTPUT
+
+    - name: Test API endpoints
+      run: |
+        FQDN=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.configuration.ingress.fqdn --output tsv)
+
+        echo "Waiting for API to be ready..."
+        sleep 60
+
+        echo "Testing health endpoint..."
+        curl -f "https://$FQDN/health" || exit 1
+
+        echo "Testing models endpoint..."
+        curl -f "https://$FQDN/models" || exit 1
+
+        echo "✅ All API endpoints are working!"
+
+    - name: Notify deployment success
+      run: |
+        echo "🚀 ML API successfully deployed to Azure Container Apps!"
+        echo "📱 API is accessible at: ${{ steps.deploy.outputs.api_url }}"
+        echo "🔍 Health check: ${{ steps.deploy.outputs.api_url }}/health"
+        echo "📚 Documentation: ${{ steps.deploy.outputs.api_url }}/docs"
+
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
