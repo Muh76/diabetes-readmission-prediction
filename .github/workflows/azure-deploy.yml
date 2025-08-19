@@ -110,6 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
 
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -139,8 +140,7 @@ jobs:
           az containerapp update \
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
-            --registry-server $ACR_LOGIN_SERVER \
+            --image $ACR_LOGIN_SERVER/diabetes-ml-api:latest \
             --registry-username ${{ secrets.ACR_USERNAME }} \
             --registry-password ${{ secrets.ACR_PASSWORD }}
         else
@@ -149,16 +149,13 @@ jobs:
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --environment ${{ env.CONTAINER_APP_ENV }} \
-            --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
+            --image $ACR_LOGIN_SERVER/diabetes-ml-api:latest \
             --target-port 8000 \
             --ingress external \
-            --allow-insecure \
-            --cpu 1.0 \
-            --memory 2.0Gi \
+            --cpu 0.5 \
+            --memory 1.0Gi \
             --min-replicas 1 \
             --max-replicas 3 \
-            --env-vars PYTHONPATH=/app PORT=8000 LOG_LEVEL=INFO \
-            --registry-server $ACR_LOGIN_SERVER \
             --registry-username ${{ secrets.ACR_USERNAME }} \
             --registry-password ${{ secrets.ACR_PASSWORD }}
         fi
@@ -166,7 +163,8 @@ jobs:
     - name: Get deployment info
       run: |
         FQDN=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.configuration.ingress.fqdn --output tsv)
-        echo "🌐 API deployed to: https://$FQDN"
+        echo "🚀 ML API deployed successfully!"
+        echo "🌐 API Endpoint: https://$FQDN"
         echo "📊 Health check: https://$FQDN/health"
         echo "📚 API docs: https://$FQDN/docs"
 
@@ -190,13 +188,12 @@ jobs:
 
     - name: Notify deployment success
       run: |
-        echo "🚀 ML API successfully deployed to Azure Container Apps!"
-        echo "📱 API is accessible at: ${{ steps.deploy.outputs.api_url }}"
-        echo "🔍 Health check: ${{ steps.deploy.outputs.api_url }}/health"
-        echo "📚 Documentation: ${{ steps.deploy.outputs.api_url }}/docs"
+        echo "🎉 ML API successfully deployed to Azure Container Apps!"
+        echo "🌐 Live API: https://${{ steps.deploy-to-azure.outputs.api_url }}"
 
   security-scan:
     runs-on: ubuntu-latest
+    if: always()
 
     steps:
     - name: Checkout code
