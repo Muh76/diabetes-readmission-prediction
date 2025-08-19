@@ -2,6 +2,8 @@
 
 An end-to-end ML system to predict 30-day readmission risk for diabetic patients using MLOps best practices.
 
+<!-- 🚀 DEPLOYMENT TRIGGER: Ready for Azure Container Apps deployment -->
+
 ## 🎯 Project Overview
 
 **Goal**: Build a production-ready ML system to predict 30-day readmission risk for diabetic patients
