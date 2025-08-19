@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy application code
 COPY notebooks/app.py ./app.py
 COPY models/ ./models/
-COPY feature_scaler.pkl ./
+COPY ./feature_scaler.pkl ./
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app && \

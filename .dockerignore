@@ -9,7 +9,6 @@ __pycache__/
 .git/
 .gitignore
 README.md
-*.md
 
 # Exclude test files
 tests/
