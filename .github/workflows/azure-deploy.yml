@@ -1,4 +1,4 @@
-name: "🚀 AZURE DEPLOYMENT: ML API to Azure Container Apps - FORCE REFRESH"
+name: "🚀 AZURE DEPLOYMENT: ML API to Azure Container Apps"
 
 on:
   # 🎯 PRIMARY WORKFLOW: This is the ONLY workflow that should run for Azure deployment
@@ -98,7 +98,6 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        platforms: linux/amd64,linux/arm64
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
@@ -108,8 +107,6 @@ jobs:
   deploy-to-azure:
     needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-
 
     steps:
     - name: Checkout code
@@ -123,11 +120,10 @@ jobs:
     - name: Set Azure subscription
       run: |
         az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        az account show
 
     - name: Install Azure Container Apps extension
       run: |
-        az extension add --name containerapp --yes
+        az extension add --name containerapp --upgrade
 
     - name: Deploy to Azure Container Apps
       run: |
@@ -136,35 +132,37 @@ jobs:
 
         # Check if container app exists
         if az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} &> /dev/null; then
-          echo "Updating existing Container App..."
+          echo "📝 Updating existing container app..."
           az containerapp update \
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --image $ACR_LOGIN_SERVER/diabetes-ml-api:latest \
-            --registry-username ${{ secrets.ACR_USERNAME }} \
-            --registry-password ${{ secrets.ACR_PASSWORD }}
+            --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
+            --target-port 8000 \
+            --ingress external \
+            --cpu 1.0 \
+            --memory 2.0Gi \
+            --min-replicas 1 \
+            --max-replicas 3
         else
-          echo "Creating new Container App..."
+          echo "🚀 Creating new container app..."
           az containerapp create \
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --environment ${{ env.CONTAINER_APP_ENV }} \
-            --image $ACR_LOGIN_SERVER/diabetes-ml-api:latest \
+            --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
             --target-port 8000 \
             --ingress external \
-            --cpu 0.5 \
-            --memory 1.0Gi \
+            --cpu 1.0 \
+            --memory 2.0Gi \
             --min-replicas 1 \
-            --max-replicas 3 \
-            --registry-username ${{ secrets.ACR_USERNAME }} \
-            --registry-password ${{ secrets.ACR_PASSWORD }}
+            --max-replicas 3
         fi
 
-    - name: Get deployment info
-      run: |
+        # Get the FQDN
         FQDN=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.configuration.ingress.fqdn --output tsv)
-        echo "🚀 ML API deployed successfully!"
-        echo "🌐 API Endpoint: https://$FQDN"
+
+        echo "🎉 Container app deployed successfully!"
+        echo "🌐 URL: https://$FQDN"
         echo "📊 Health check: https://$FQDN/health"
         echo "📚 API docs: https://$FQDN/docs"
 
@@ -186,11 +184,6 @@ jobs:
 
         echo "✅ All API endpoints are working!"
 
-    - name: Notify deployment success
-      run: |
-        echo "🎉 ML API successfully deployed to Azure Container Apps!"
-        echo "🌐 Live API: https://${{ steps.deploy-to-azure.outputs.api_url }}"
-
   security-scan:
     runs-on: ubuntu-latest
     if: always()
@@ -202,7 +195,8 @@ jobs:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        scan-type: 'fs'
+        scan-ref: '.'
         format: 'sarif'
         output: 'trivy-results.sarif'
 
