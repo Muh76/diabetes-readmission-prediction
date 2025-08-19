@@ -60,4 +60,4 @@ ignore = ["E501", "B008", "C901"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
-addopts = "--cov=src --cov-report=html --cov-report=term-missing"
+addopts = ""
