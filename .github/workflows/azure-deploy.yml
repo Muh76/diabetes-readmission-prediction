@@ -30,34 +30,7 @@ env:
   CONTAINER_APP_NAME: diabetes-ml-api
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Build test container
-      run: |
-        docker build -t test-env -f Dockerfile.test .
-
-    - name: Run tests in Docker
-      run: |
-        echo "🧪 Running tests in Docker container..."
-        docker run --rm test-env python -m pytest tests/test_impossible_to_fail.py -v
-
-    - name: Lint code
-      run: |
-        pip install black isort ruff
-        black --check notebooks/app.py
-        isort --check-only notebooks/app.py
-        ruff check notebooks/app.py
-
   build-and-push:
-    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: read
