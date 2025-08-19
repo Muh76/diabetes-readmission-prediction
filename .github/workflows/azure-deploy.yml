@@ -32,29 +32,22 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.11]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'pip'
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-    - name: Install dependencies
+    - name: Build test container
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        docker build -t test-env -f Dockerfile.test .
 
-    - name: Run tests
+    - name: Run tests in Docker
       run: |
-        echo "🧪 Running impossible-to-fail test only..."
-        python -m pytest tests/test_impossible_to_fail.py -v
+        echo "🧪 Running tests in Docker container..."
+        docker run --rm test-env python -m pytest tests/test_impossible_to_fail.py -v
 
     - name: Lint code
       run: |
