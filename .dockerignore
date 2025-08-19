@@ -1,0 +1,20 @@
+# Exclude large model files that cause Docker build issues
+models/random_forest_optimized.pkl
+models/*_optimized.pkl
+
+# Exclude development files
+*.ipynb
+*.pyc
+__pycache__/
+.git/
+.gitignore
+README.md
+*.md
+
+# Exclude test files
+tests/
+.pytest_cache/
+
+# Exclude virtual environment
+venv/
+env/
