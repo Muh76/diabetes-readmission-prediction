@@ -1,3 +1,12 @@
+# =============================================================================
+# DIABETIC READMISSION PREDICTION API
+# Production-ready FastAPI application for ML model serving
+#
+# DEPLOYMENT FIX: File paths corrected to match Dockerfile structure
+# - feature_names.pkl: ./feature_names.pkl (current directory)
+# - feature_scaler.pkl: ./feature_scaler.pkl (current directory)
+# - models: ./models/ (models subdirectory)
+# =============================================================================
 import logging
 import os
 import sys
@@ -12,6 +21,9 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, validator
+
+# VERSION: 2.0 - File paths fixed for Azure deployment
+# DEPLOYMENT: 2025-08-20 - Critical file path fix applied
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
