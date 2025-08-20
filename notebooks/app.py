@@ -113,6 +113,52 @@ async def get_request_timing():
     return {"start_time": time.time()}
 
 
+def load_models():
+    """Load trained models and preprocessing artifacts"""
+    global models, feature_names, feature_scaler, model_metadata
+
+    try:
+        # Load feature names and scaler
+        feature_names = joblib.load("../feature_names.pkl")
+        feature_scaler = joblib.load("../feature_scaler.pkl")
+        logger.info(f"✅ Loaded {len(feature_names)} feature names")
+
+        # Load only small models (exclude large ones)
+        model_files = {
+            "logistic_regression": "../models/logistic_regression.pkl",
+            "xgboost": "../models/xgboost.pkl",
+            "lightgbm": "../models/lightgbm.pkl",
+            "catboost": "../models/catboost.pkl",
+        }
+
+        for model_name, model_path in model_files.items():
+            try:
+                if os.path.exists(model_path):
+                    model = joblib.load(model_path)
+                    models[model_name] = model
+
+                    # Get model size
+                    model_size = os.path.getsize(model_path) / (1024 * 1024)  # MB
+                    logger.info(f"✅ Loaded {model_name} model ({model_size:.2f} MB)")
+
+                    # Store metadata
+                    model_metadata[model_name] = {
+                        "size_mb": model_size,
+                        "type": type(model).__name__,
+                        "loaded_at": datetime.now().isoformat(),
+                    }
+                else:
+                    logger.warning(f"⚠️ Model file not found: {model_path}")
+            except Exception as e:
+                logger.error(f"❌ Failed to load {model_name}: {str(e)}")
+
+        logger.info(f"🎯 Successfully loaded {len(models)} models")
+
+    except Exception as e:
+        logger.error(f"❌ Critical error loading models: {str(e)}")
+        raise
+
+
 # Load models on startup
 @app.on_event("startup")
 async def startup_event():
@@ -122,51 +168,7 @@ async def startup_event():
     logger.info("🚀 Starting Diabetic Readmission ML Pipeline API...")
 
     try:
-        # Load feature names
-        feature_names_path = os.path.join(
-            os.path.dirname(__file__), "..", "models", "feature_names.pkl"
-        )
-        if os.path.exists(feature_names_path):
-            feature_names = joblib.load(feature_names_path)
-            logger.info(f"✅ Loaded {len(feature_names)} feature names")
-
-        # Load models
-        models_dir = os.path.join(os.path.dirname(__file__), "..", "models")
-        model_files = {
-            "xgboost": "xgboost.pkl",
-            "lightgbm": "lightgbm.pkl",
-            "catboost": "catboost.pkl",
-            "random_forest": "random_forest.pkl",
-            "logistic_regression": "logistic_regression.pkl",
-        }
-
-        for model_name, filename in model_files.items():
-            model_path = os.path.join(models_dir, filename)
-            if os.path.exists(model_path):
-                try:
-                    models[model_name] = joblib.load(model_path)
-                    model_size = os.path.getsize(model_path) / (1024 * 1024)  # MB
-                    model_metadata[model_name] = {
-                        "size_mb": round(model_size, 2),
-                        "loaded_at": datetime.now().isoformat(),
-                        "status": "loaded",
-                    }
-                    logger.info(f"✅ Loaded {model_name} model ({model_size:.2f} MB)")
-                except Exception as e:
-                    logger.error(f"❌ Failed to load {model_name} model: {e}")
-                    model_metadata[model_name] = {"status": "failed", "error": str(e)}
-
-        # Load feature scaler if exists
-        scaler_path = os.path.join(
-            os.path.dirname(__file__), "..", "feature_scaler.pkl"
-        )
-        if os.path.exists(scaler_path):
-            feature_scaler = joblib.load(scaler_path)
-            logger.info("✅ Loaded feature scaler")
-
-        logger.info(
-            f"🎯 Successfully loaded {len([m for m in models.values() if m is not None])} models"
-        )
+        load_models()
 
     except Exception as e:
         logger.error(f"❌ Startup failed: {e}")

@@ -10,7 +10,7 @@ ENV PORT=8000
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies including curl for health checks
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
@@ -24,9 +24,12 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy only essential files (avoid large models)
+# Copy application code
 COPY notebooks/app.py ./app.py
+
+# Copy only essential files
 COPY feature_scaler.pkl ./feature_scaler.pkl
+COPY feature_names.pkl ./feature_names.pkl
 
 # Copy only small models (exclude large ones)
 COPY models/logistic_regression.pkl ./models/
