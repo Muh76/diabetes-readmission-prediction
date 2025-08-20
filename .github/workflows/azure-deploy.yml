@@ -163,6 +163,16 @@ jobs:
         echo "Waiting for API to be ready (increased wait time for first deployment)..."
         sleep 120  # Wait 2 minutes for container to fully start
 
+        echo "🔍 DIAGNOSIS: Checking container logs to see why FastAPI is not responding..."
+        echo "=== Container Logs ==="
+        az containerapp logs show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --follow false | head -50
+
+        echo "=== Container Status ==="
+        az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.runningStatus
+
+        echo "=== Container Configuration ==="
+        az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.configuration.ingress
+
         echo "Testing health endpoint with retries..."
         MAX_RETRIES=5
         RETRY_COUNT=0
@@ -184,8 +194,19 @@ jobs:
 
         if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
           echo "❌ Health endpoint failed after $MAX_RETRIES attempts"
-          echo "🔍 Checking container app status..."
-          az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.runningStatus
+          echo "🔍 FINAL DIAGNOSIS: Container is running but not responding to HTTP requests"
+          echo "=== Final Container Logs (last 100 lines) ==="
+          az containerapp logs show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --follow false | tail -100
+
+          echo "=== Container App Full Status ==="
+          az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties
+
+          echo "🚨 DEPLOYMENT FAILED: FastAPI application is not responding"
+          echo "💡 Likely causes:"
+          echo "   1. Model loading failure during startup"
+          echo "   2. FastAPI app crash during initialization"
+          echo "   3. Port binding issues"
+          echo "   4. Missing Python dependencies"
           exit 1
         fi
 
