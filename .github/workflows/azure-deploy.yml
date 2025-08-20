@@ -122,8 +122,6 @@ jobs:
               --name ${{ env.CONTAINER_APP_NAME }} \
               --resource-group ${{ env.RESOURCE_GROUP }} \
               --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
-              --target-port 8000 \
-              --ingress external \
               --cpu 1.0 \
               --memory 2.0Gi \
               --min-replicas 1 \
