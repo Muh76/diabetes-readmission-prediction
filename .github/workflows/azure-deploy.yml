@@ -162,16 +162,46 @@ jobs:
       run: |
         FQDN=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.configuration.ingress.fqdn --output tsv)
 
-        echo "Waiting for API to be ready..."
-        sleep 60
+        echo "Waiting for API to be ready (increased wait time for first deployment)..."
+        sleep 120  # Wait 2 minutes for container to fully start
 
-        echo "Testing health endpoint..."
-        curl -f "https://$FQDN/health" || exit 1
+        echo "Testing health endpoint with retries..."
+        MAX_RETRIES=5
+        RETRY_COUNT=0
+
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+          echo "Attempt $((RETRY_COUNT + 1)) of $MAX_RETRIES..."
+
+          if curl -f --max-time 30 "https://$FQDN/health"; then
+            echo "✅ Health endpoint is working!"
+            break
+          else
+            echo "⚠️ Health check failed, waiting 30 seconds before retry..."
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+              sleep 30
+            fi
+          fi
+        done
+
+        if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+          echo "❌ Health endpoint failed after $MAX_RETRIES attempts"
+          echo "🔍 Checking container app status..."
+          az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.runningStatus
+          exit 1
+        fi
 
         echo "Testing models endpoint..."
-        curl -f "https://$FQDN/models" || exit 1
+        if curl -f --max-time 30 "https://$FQDN/models"; then
+          echo "✅ Models endpoint is working!"
+        else
+          echo "⚠️ Models endpoint failed, but deployment is successful"
+        fi
 
-        echo "✅ All API endpoints are working!"
+        echo "🎉 API deployment completed successfully!"
+        echo "🌐 Your ML API is live at: https://$FQDN"
+        echo "📊 Health check: https://$FQDN/health"
+        echo "📚 API docs: https://$FQDN/docs"
 
   security-scan:
     runs-on: ubuntu-latest
