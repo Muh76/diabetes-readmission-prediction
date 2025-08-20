@@ -1,5 +1,26 @@
 #!/bin/bash
 
+# ⚠️ WARNING: THIS MANUAL DEPLOYMENT SCRIPT IS DISABLED ⚠️
+#
+# CONFLICT DETECTED: This script conflicts with GitHub Actions deployment
+# and may cause deployment source confusion.
+#
+# USE INSTEAD: GitHub Actions workflow (.github/workflows/azure-deploy.yml)
+#
+# To prevent conflicts, this script has been disabled.
+# If you need manual deployment, use the GitHub Actions workflow dispatch.
+
+echo "❌ MANUAL DEPLOYMENT SCRIPT DISABLED"
+echo "🚨 This script conflicts with GitHub Actions deployment"
+echo "💡 Use GitHub Actions workflow instead:"
+echo "   - Push to master branch to trigger automatic deployment"
+echo "   - Or use GitHub Actions workflow dispatch"
+echo ""
+echo "🔧 To re-enable this script, remove the exit command below"
+echo ""
+
+exit 1
+
 # Azure Container Apps Deployment Script for ML API
 # This script deploys the Diabetic Readmission ML API to Azure Container Apps
 

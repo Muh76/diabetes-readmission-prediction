@@ -120,6 +120,22 @@ jobs:
         echo "Username: $ACR_USERNAME"
         echo "Password: [HIDDEN]"
 
+        # 🔍 VERIFICATION: Check for conflicting deployments
+        echo "🔍 VERIFYING: No conflicting deployments exist..."
+
+        # Check if there are any other container apps with similar names
+        echo "Checking for conflicting container apps..."
+        az containerapp list --resource-group ${{ env.RESOURCE_GROUP }} --query "[].{name:name, image:properties.template.containers[0].image}" --output table
+
+        # Check if our target container app exists and what image it's using
+        if az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} &> /dev/null; then
+          echo "🔍 Current container app image:"
+          az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query "properties.template.containers[0].image" --output tsv
+
+          echo "🔍 Container app revision history:"
+          az containerapp revision list --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query "[].{name:name, image:properties.template.containers[0].image, created:properties.createdTime}" --output table
+        fi
+
         echo "🗑️ FORCE CLEANUP: Deleting existing container app to ensure fresh deployment..."
         if az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} &> /dev/null; then
           echo "🚨 FORCE DELETE: Removing old container app completely..."
@@ -133,6 +149,10 @@ jobs:
         echo "🚀 Creating completely new container app with fresh image..."
         FULL_IMAGE_NAME="$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest"
         echo "📦 Using image: $FULL_IMAGE_NAME"
+
+        # 🔍 VERIFICATION: Verify the image exists in ACR
+        echo "🔍 VERIFYING: Image exists in Azure Container Registry..."
+        az acr repository show-tags --name diabetesmlacr --repository ${{ env.IMAGE_NAME }} --orderby time_desc --output table
 
         az containerapp create \
           --name ${{ env.CONTAINER_APP_NAME }} \
