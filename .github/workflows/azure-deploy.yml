@@ -40,6 +40,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
     - name: Log in to Azure Container Registry
       uses: azure/docker-login@v1
       with:
@@ -52,22 +55,36 @@ jobs:
         # Force complete rebuild with new tag
         TIMESTAMP=$(date +%Y%m%d-%H%M%S)
         IMAGE_TAG="v2.0-$TIMESTAMP"
+        FULL_IMAGE_NAME="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
 
         echo "🔨 Building Docker image with tag: $IMAGE_TAG"
+        echo "📦 Full image name: $FULL_IMAGE_NAME"
 
         # Clear Docker cache completely
+        echo "🧹 Clearing Docker caches..."
         docker system prune -af
         docker builder prune -af
 
-        # Build with no cache
-        docker build --no-cache -t ${{ env.IMAGE_NAME }}:$IMAGE_TAG .
-        docker build --no-cache -t ${{ env.IMAGE_NAME }}:latest .
+        # Build with no cache and proper tagging
+        echo "🔨 Building image with tag: $IMAGE_TAG"
+        docker build --no-cache -t $FULL_IMAGE_NAME:$IMAGE_TAG .
+
+        echo "🔨 Building image with tag: latest"
+        docker build --no-cache -t $FULL_IMAGE_NAME:latest .
+
+        # Verify images were built
+        echo "📋 Built images:"
+        docker images | grep ${{ env.IMAGE_NAME }}
 
         echo "📦 Pushing images to Azure Container Registry..."
-        docker push ${{ env.IMAGE_NAME }}:$IMAGE_TAG
-        docker push ${{ env.IMAGE_NAME }}:latest
+        echo "Pushing $IMAGE_TAG..."
+        docker push $FULL_IMAGE_NAME:$IMAGE_TAG
 
-        # Set output for deployment
+        echo "Pushing latest..."
+        docker push $FULL_IMAGE_NAME:latest
+
+        # Verify images were pushed
+        echo "✅ Images pushed successfully!"
         echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
 
   deploy-to-azure:
@@ -98,20 +115,30 @@ jobs:
         ACR_USERNAME=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query username --output tsv)
         ACR_PASSWORD=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query 'passwords[0].value' --output tsv)
 
+        echo "🔍 ACR Details:"
+        echo "Login Server: $ACR_LOGIN_SERVER"
+        echo "Username: $ACR_USERNAME"
+        echo "Password: [HIDDEN]"
+
         echo "🗑️ FORCE CLEANUP: Deleting existing container app to ensure fresh deployment..."
         if az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} &> /dev/null; then
           echo "🚨 FORCE DELETE: Removing old container app completely..."
           az containerapp delete --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --yes
           echo "⏳ Waiting for deletion to complete..."
           sleep 30
+        else
+          echo "ℹ️ No existing container app found, proceeding with creation..."
         fi
 
         echo "🚀 Creating completely new container app with fresh image..."
+        FULL_IMAGE_NAME="$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest"
+        echo "📦 Using image: $FULL_IMAGE_NAME"
+
         az containerapp create \
           --name ${{ env.CONTAINER_APP_NAME }} \
           --resource-group ${{ env.RESOURCE_GROUP }} \
           --environment ${{ env.CONTAINER_APP_ENV }} \
-          --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
+          --image $FULL_IMAGE_NAME \
           --registry-server $ACR_LOGIN_SERVER \
           --registry-username $ACR_USERNAME \
           --registry-password $ACR_PASSWORD \

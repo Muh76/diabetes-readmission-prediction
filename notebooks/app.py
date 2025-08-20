@@ -1,6 +1,7 @@
 # FORCE DEPLOYMENT UPDATE - V2.0 FINAL - CACHE BUSTING COMMENT
 # This comment ensures Docker builds a new layer and deploys the latest code
-# Last updated: $(date) - Force rebuild to fix path issues
+# Last updated: 2025-01-20 20:30 - Force rebuild to fix path issues
+# Build timestamp: $(date) - Ensuring latest deployment
 
 # =============================================================================
 # DIABETIC READMISSION PREDICTION API
