@@ -80,18 +80,25 @@ jobs:
         # Get ACR login server and credentials
         ACR_LOGIN_SERVER=$(az acr show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query loginServer --output tsv)
         ACR_USERNAME=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query username --output tsv)
-        ACR_PASSWORD=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query passwords[0].value --output tsv)
+        ACR_PASSWORD=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query 'passwords[0].value' --output tsv)
 
         # Check if container app exists
         if az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} &> /dev/null; then
           echo "📝 Updating existing container app..."
+
+          # First, set the registry credentials
+          az containerapp registry set \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --server $ACR_LOGIN_SERVER \
+            --username $ACR_USERNAME \
+            --password $ACR_PASSWORD
+
+          # Then update the container app
           az containerapp update \
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
-            --registry-server $ACR_LOGIN_SERVER \
-            --registry-username $ACR_USERNAME \
-            --registry-password $ACR_PASSWORD \
             --target-port 8000 \
             --ingress external \
             --cpu 1.0 \
