@@ -1,3 +1,7 @@
+# FORCE DEPLOYMENT UPDATE - V2.0 FINAL - CACHE BUSTING COMMENT
+# This comment ensures Docker builds a new layer and deploys the latest code
+# Last updated: $(date) - Force rebuild to fix path issues
+
 # =============================================================================
 # DIABETIC READMISSION PREDICTION API
 # Production-ready FastAPI application for ML model serving
