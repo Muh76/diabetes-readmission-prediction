@@ -14,6 +14,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
@@ -23,10 +24,15 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy only essential files (avoid large models)
 COPY notebooks/app.py ./app.py
-COPY models/ ./models/
 COPY feature_scaler.pkl ./feature_scaler.pkl
+
+# Copy only small models (exclude large ones)
+COPY models/logistic_regression.pkl ./models/
+COPY models/xgboost.pkl ./models/
+COPY models/lightgbm.pkl ./models/
+COPY models/catboost.pkl ./models/
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app && \

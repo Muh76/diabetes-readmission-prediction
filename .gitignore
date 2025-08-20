@@ -91,6 +91,9 @@ logs/
 *.pkl
 *.pickle
 
+# EXCEPTION: Keep feature_scaler.pkl for Docker build
+!feature_scaler.pkl
+
 # Model files
 *.joblib
 *.pkl
