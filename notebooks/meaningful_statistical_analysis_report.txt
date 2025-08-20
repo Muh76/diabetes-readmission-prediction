@@ -1,0 +1,39 @@
+
+        MEANINGFUL STATISTICAL ANALYSIS REPORT
+        ==================================================
+
+        DATASET OVERVIEW:
+        • Total patients: 101,766
+        • Features: 90
+        • Target column: readmitted_proper
+        • Target distribution: {0: 66221, 1: 35545}
+        • Readmission rate: 0.349 (34.9%)
+
+        HYPOTHESIS TESTING:
+        • Features tested: 89
+        • Statistically significant: 35
+        • Non-significant: 54
+        • Significance level: α = 0.05
+
+        🧪 A/B TESTING:
+        • Baseline readmission rate: 0.349 (34.9%)
+        • Control group rate: 0.348 (34.8%)
+        • Intervention group rate: 0.199 (19.9%)
+        • Absolute improvement: 0.149 (14.9%)
+        • Statistical significance: YES
+
+        📈 STATISTICAL POWER:
+        • Required sample size per group: 198
+        • Current sample size: 101,766
+        • Sufficient power: YES
+
+        🎯 BUSINESS IMPLICATIONS:
+        • The intervention shows a 42.8% improvement
+        • Statistical significance: Achieved
+        • Effect size: Small
+        • Recommendation: Implement intervention
+
+        �� ANALYSIS QUALITY:
+        • Target variability: Good
+        • Statistical power: High
+        • Feature significance: Good

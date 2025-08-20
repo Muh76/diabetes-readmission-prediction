@@ -1,0 +1,31 @@
+
+    STATISTICAL ANALYSIS REPORT
+    ==================================================
+
+    DATASET OVERVIEW:
+    • Total patients: 101,766
+    • Features: 91
+    • Target column: readmitted_clean_binary
+    • Target distribution: {0: 101766}
+
+    HYPOTHESIS TESTING:
+    • Features tested: 50
+    • Significant features: 0
+    • Significance level: α = 0.05
+
+    �� A/B TESTING:
+    • Control group rate: 0.000 (0.0%)
+    • Intervention group rate: 0.000 (0.0%)
+    • Absolute improvement: 0.000 (0.0%)
+    • Statistical significance: NO
+
+    📈 STATISTICAL POWER:
+    • Required sample size per group: 198
+    • Current sample size: 101,766
+    • Sufficient power: YES
+
+    🎯 BUSINESS IMPLICATIONS:
+    • The intervention shows a nan% improvement
+    • Statistical significance: Not achieved
+    • Effect size: Small
+    • Recommendation: Further testing needed
