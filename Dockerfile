@@ -27,7 +27,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy application code
 COPY notebooks/app.py ./app.py
 
-# Copy only essential files
+# Copy essential files from root directory
 COPY feature_scaler.pkl ./feature_scaler.pkl
 COPY feature_names.pkl ./feature_names.pkl
 
@@ -36,6 +36,9 @@ COPY models/logistic_regression.pkl ./models/
 COPY models/xgboost.pkl ./models/
 COPY models/lightgbm.pkl ./models/
 COPY models/catboost.pkl ./models/
+
+# Verify files are copied correctly
+RUN ls -la && echo "=== Models directory ===" && ls -la models/
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app && \
