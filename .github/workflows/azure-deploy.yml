@@ -82,29 +82,53 @@ jobs:
         ACR_USERNAME=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query username --output tsv)
         ACR_PASSWORD=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query 'passwords[0].value' --output tsv)
 
-        # Check if container app exists
+        # Check if container app exists and its state
         if az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} &> /dev/null; then
-          echo "📝 Updating existing container app..."
+          # Check the provisioning state
+          PROVISIONING_STATE=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.provisioningState --output tsv)
 
-          # First, set the registry credentials
-          az containerapp registry set \
-            --name ${{ env.CONTAINER_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --server $ACR_LOGIN_SERVER \
-            --username $ACR_USERNAME \
-            --password $ACR_PASSWORD
+          if [ "$PROVISIONING_STATE" = "Failed" ] || [ "$PROVISIONING_STATE" = "Canceled" ]; then
+            echo "🚨 Container app is in failed state ($PROVISIONING_STATE). Deleting and recreating..."
+            az containerapp delete --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --yes
 
-          # Then update the container app
-          az containerapp update \
-            --name ${{ env.CONTAINER_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
-            --target-port 8000 \
-            --ingress external \
-            --cpu 1.0 \
-            --memory 2.0Gi \
-            --min-replicas 1 \
-            --max-replicas 3
+            echo "🚀 Creating new container app..."
+            az containerapp create \
+              --name ${{ env.CONTAINER_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --environment ${{ env.CONTAINER_APP_ENV }} \
+              --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
+              --registry-server $ACR_LOGIN_SERVER \
+              --registry-username $ACR_USERNAME \
+              --registry-password $ACR_PASSWORD \
+              --target-port 8000 \
+              --ingress external \
+              --cpu 1.0 \
+              --memory 2.0Gi \
+              --min-replicas 1 \
+              --max-replicas 3
+          else
+            echo "📝 Updating existing container app (state: $PROVISIONING_STATE)..."
+
+            # First, set the registry credentials
+            az containerapp registry set \
+              --name ${{ env.CONTAINER_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --server $ACR_LOGIN_SERVER \
+              --username $ACR_USERNAME \
+              --password $ACR_PASSWORD
+
+            # Then update the container app
+            az containerapp update \
+              --name ${{ env.CONTAINER_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
+              --target-port 8000 \
+              --ingress external \
+              --cpu 1.0 \
+              --memory 2.0Gi \
+              --min-replicas 1 \
+              --max-replicas 3
+          fi
         else
           echo "🚀 Creating new container app..."
           az containerapp create \
