@@ -49,10 +49,26 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        # Simple Docker build without buildx
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-        echo "✅ Docker image built and pushed successfully"
+        # Force complete rebuild with new tag
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        IMAGE_TAG="v2.0-$TIMESTAMP"
+
+        echo "🔨 Building Docker image with tag: $IMAGE_TAG"
+
+        # Clear Docker cache completely
+        docker system prune -af
+        docker builder prune -af
+
+        # Build with no cache
+        docker build --no-cache -t ${{ env.IMAGE_NAME }}:$IMAGE_TAG .
+        docker build --no-cache -t ${{ env.IMAGE_NAME }}:latest .
+
+        echo "📦 Pushing images to Azure Container Registry..."
+        docker push ${{ env.IMAGE_NAME }}:$IMAGE_TAG
+        docker push ${{ env.IMAGE_NAME }}:latest
+
+        # Set output for deployment
+        echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
 
   deploy-to-azure:
     needs: build-and-push
@@ -82,68 +98,29 @@ jobs:
         ACR_USERNAME=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query username --output tsv)
         ACR_PASSWORD=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query 'passwords[0].value' --output tsv)
 
-        # Check if container app exists and its state
+        echo "🗑️ FORCE CLEANUP: Deleting existing container app to ensure fresh deployment..."
         if az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} &> /dev/null; then
-          # Check the provisioning state
-          PROVISIONING_STATE=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.provisioningState --output tsv)
-
-          if [ "$PROVISIONING_STATE" = "Failed" ] || [ "$PROVISIONING_STATE" = "Canceled" ]; then
-            echo "🚨 Container app is in failed state ($PROVISIONING_STATE). Deleting and recreating..."
-            az containerapp delete --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --yes
-
-            echo "🚀 Creating new container app..."
-            az containerapp create \
-              --name ${{ env.CONTAINER_APP_NAME }} \
-              --resource-group ${{ env.RESOURCE_GROUP }} \
-              --environment ${{ env.CONTAINER_APP_ENV }} \
-              --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
-              --registry-server $ACR_LOGIN_SERVER \
-              --registry-username $ACR_USERNAME \
-              --registry-password $ACR_PASSWORD \
-              --target-port 8000 \
-              --ingress external \
-              --cpu 1.0 \
-              --memory 2.0Gi \
-              --min-replicas 1 \
-              --max-replicas 3
-          else
-            echo "📝 Updating existing container app (state: $PROVISIONING_STATE)..."
-
-            # First, set the registry credentials
-            az containerapp registry set \
-              --name ${{ env.CONTAINER_APP_NAME }} \
-              --resource-group ${{ env.RESOURCE_GROUP }} \
-              --server $ACR_LOGIN_SERVER \
-              --username $ACR_USERNAME \
-              --password $ACR_PASSWORD
-
-            # Then update the container app
-            az containerapp update \
-              --name ${{ env.CONTAINER_APP_NAME }} \
-              --resource-group ${{ env.RESOURCE_GROUP }} \
-              --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
-              --cpu 1.0 \
-              --memory 2.0Gi \
-              --min-replicas 1 \
-              --max-replicas 3
-          fi
-        else
-          echo "🚀 Creating new container app..."
-          az containerapp create \
-            --name ${{ env.CONTAINER_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --environment ${{ env.CONTAINER_APP_ENV }} \
-            --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
-            --registry-server $ACR_LOGIN_SERVER \
-            --registry-username $ACR_USERNAME \
-            --registry-password $ACR_PASSWORD \
-            --target-port 8000 \
-            --ingress external \
-            --cpu 1.0 \
-            --memory 2.0Gi \
-            --min-replicas 1 \
-            --max-replicas 3
+          echo "🚨 FORCE DELETE: Removing old container app completely..."
+          az containerapp delete --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --yes
+          echo "⏳ Waiting for deletion to complete..."
+          sleep 30
         fi
+
+        echo "🚀 Creating completely new container app with fresh image..."
+        az containerapp create \
+          --name ${{ env.CONTAINER_APP_NAME }} \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --environment ${{ env.CONTAINER_APP_ENV }} \
+          --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
+          --registry-server $ACR_LOGIN_SERVER \
+          --registry-username $ACR_USERNAME \
+          --registry-password $ACR_PASSWORD \
+          --target-port 8000 \
+          --ingress external \
+          --cpu 1.0 \
+          --memory 2.0Gi \
+          --min-replicas 1 \
+          --max-replicas 3
 
         # Get the FQDN
         FQDN=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.configuration.ingress.fqdn --output tsv)
