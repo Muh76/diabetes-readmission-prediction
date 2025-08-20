@@ -77,8 +77,10 @@ jobs:
 
     - name: Deploy to Azure Container Apps
       run: |
-        # Get ACR login server
+        # Get ACR login server and credentials
         ACR_LOGIN_SERVER=$(az acr show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query loginServer --output tsv)
+        ACR_USERNAME=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query username --output tsv)
+        ACR_PASSWORD=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query passwords[0].value --output tsv)
 
         # Check if container app exists
         if az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} &> /dev/null; then
@@ -87,6 +89,9 @@ jobs:
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
+            --registry-server $ACR_LOGIN_SERVER \
+            --registry-username $ACR_USERNAME \
+            --registry-password $ACR_PASSWORD \
             --target-port 8000 \
             --ingress external \
             --cpu 1.0 \
@@ -100,6 +105,9 @@ jobs:
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --environment ${{ env.CONTAINER_APP_ENV }} \
             --image $ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest \
+            --registry-server $ACR_LOGIN_SERVER \
+            --registry-username $ACR_USERNAME \
+            --registry-password $ACR_PASSWORD \
             --target-port 8000 \
             --ingress external \
             --cpu 1.0 \
