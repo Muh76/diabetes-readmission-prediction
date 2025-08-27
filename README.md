@@ -3,7 +3,7 @@
 **Predict hospital readmission risk with 93% accuracy using production ML - deployed on Azure with real-time API and interactive dashboards.**
 
 [![Production Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)](https://github.com/Muh76/diabetes-readmission-prediction)
-[![API Status](https://img.shields.io/badge/API-Live%20Deployed-blue)](https://diabetes-ml-api.azurecontainerapps.io)
+[![API Status](https://img.shields.io/badge/API-Local%20Development-blue)](http://localhost:8000)
 [![Tests](https://img.shields.io/badge/Tests-Passing-green)](https://github.com/Muh76/diabetes-readmission-prediction/actions)
 [![Docker](https://img.shields.io/badge/Docker-Build%20Passing-blue)](https://github.com/Muh76/diabetes-readmission-prediction/actions)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
@@ -13,39 +13,29 @@
 
 ## 🎯 Quick Demo (5 minutes)
 
-**See it running live:**
-- **API**: https://diabetes-ml-api.azurecontainerapps.io
-- **Health Check**: https://diabetes-ml-api.azurecontainerapps.io/health
-- **Interactive Docs**: https://diabetes-ml-api.azurecontainerapps.io/docs
+**Local API Setup:**
+The API is designed to run locally for development and testing. The production deployment was previously available on Azure but is currently offline.
 
+**Prerequisites:**
+- Python 3.9+ with all dependencies installed
+- All model files in the correct locations
+
+**Starting the API:**
 ```bash
-# Clone and run locally
-git clone https://github.com/Muh76/diabetes-readmission-prediction.git
-cd diabetes-readmission-prediction
+# Option 1: Use the quick start script
+./start_api.sh
 
-# Install dependencies
-pip install -r requirements.txt
+# Option 2: Manual start
+cd notebooks
+python app.py
 
-# Start API server
-make run-api
-
-# In another terminal - test the API
-curl -X POST "http://localhost:8000/predict" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "patient_data": {
-      "age": 65,
-      "time_in_hospital": 5,
-      "num_medications": 15,
-      "num_lab_procedures": 45,
-      "number_diagnoses": 9
-    }
-  }'
-
-# Start dashboard (optional)
-make run-streamlit
-# Open http://localhost:8501
+# API will be available at:
+# - Main API: http://localhost:8000
+# - Health Check: http://localhost:8000/health
+# - Interactive Docs: http://localhost:8000/docs
 ```
+
+**Note**: The API requires the trained models to be present in the `models/` directory. If you encounter issues, please ensure all dependencies are installed and model files are available.
 
 ### **Docker Quickstart**
 ```bash
@@ -128,16 +118,20 @@ The project includes **10 comprehensive dashboards** with real-time insights:
 
 ## 🚀 API Usage
 
-### **Production Endpoint**
+### **Local API Endpoint**
 ```bash
-# Base URL
-https://diabetes-ml-api.azurecontainerapps.io
+# Start the API locally first
+cd notebooks
+python app.py
+
+# Base URL (after starting API)
+http://localhost:8000
 
 # Health check
-curl https://diabetes-ml-api.azurecontainerapps.io/health
+curl http://localhost:8000/health
 
 # Single prediction
-curl -X POST "https://diabetes-ml-api.azurecontainerapps.io/predict" \
+curl -X POST "http://localhost:8000/predict" \
   -H "Content-Type: application/json" \
   -d '{
     "patient_data": {
@@ -318,8 +312,8 @@ git push origin feature/amazing-feature
 
 ## 📄 License
 
-**Code & Model**: MIT License - see [LICENSE](LICENSE) file  
-**Data**: © Original providers (UCI Machine Learning Repository)  
+**Code & Model**: MIT License - see [LICENSE](LICENSE) file
+**Data**: © Original providers (UCI Machine Learning Repository)
 **Model & Code**: MIT License - freely available for commercial use
 
 ---
@@ -352,7 +346,7 @@ git push origin feature/amazing-feature
 
 **✅ PRODUCTION READY**
 
-- **API**: Live and operational on Azure Container Apps
+- **API**: Available for local development and deployment
 - **Performance**: All targets exceeded (93.12% accuracy)
 - **Documentation**: 95% coverage with comprehensive guides
 - **Monitoring**: 24/7 monitoring with MLflow tracking
@@ -360,8 +354,8 @@ git push origin feature/amazing-feature
 
 ---
 
-**Last Updated**: August 2025  
-**Version**: 2.0.0  
+**Last Updated**: August 2025
+**Version**: 2.0.0
 **Status**: Production Deployed ✅
 
 ---
