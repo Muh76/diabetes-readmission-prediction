@@ -14,7 +14,7 @@
 ## 🎯 Quick Demo (5 minutes)
 
 **Local API Setup:**
-The API is designed to run locally for development and testing. The production deployment was previously available on Azure but is currently offline.
+The API is designed to run locally for development and testing. You can see the system in action through our comprehensive screenshots below.
 
 **Prerequisites:**
 - Python 3.9+ with all dependencies installed
@@ -66,10 +66,32 @@ curl http://localhost:8000/health
 
 ---
 
-## 📸 Screenshots & Dashboards
+## 📸 Screenshots & Live Demo
 
-### **Interactive Dashboards**
-The project includes **10 comprehensive dashboards** with real-time insights:
+### **🚀 System Overview**
+*Coming Soon: Screenshots will be added here showing the complete system in action*
+
+### **📊 API Interface Screenshots**
+- **Swagger UI**: Interactive API documentation
+- **Health Check**: System status and performance metrics
+- **Prediction Endpoint**: Real-time risk assessment interface
+- **Response Examples**: Sample API responses with explanations
+
+### **📈 Dashboard Screenshots**
+- **Executive Summary**: High-level business insights
+- **ROI Validation**: Financial impact analysis and projections
+- **Risk Mitigation**: Risk management strategies and outcomes
+- **Clinical Outcomes**: Medical insights and patient outcomes
+- **Business Metrics**: Key performance indicators and trends
+
+### **🤖 Model Performance Screenshots**
+- **Performance Metrics**: Accuracy, ROC-AUC, and other ML metrics
+- **Feature Importance**: SHAP plots showing key risk factors
+- **Confusion Matrix**: Model classification results
+- **Training Progress**: MLflow experiment tracking
+
+### **💻 Interactive Dashboards**
+The project includes **10 comprehensive HTML dashboards** with real-time insights:
 
 1. **[Executive Summary Dashboard](notebooks/executive_summary_final.html)** - High-level overview
 2. **[ROI Validation Dashboard](notebooks/roi_validation_dashboard.html)** - Financial impact analysis
@@ -79,6 +101,20 @@ The project includes **10 comprehensive dashboards** with real-time insights:
 6. **[Technical Documentation Dashboard](notebooks/technical_documentation_dashboard.html)** - System details
 
 *All dashboards are interactive HTML files with Plotly visualizations*
+
+**📱 Screenshots Coming Soon**: We're preparing high-quality screenshots to showcase the system's capabilities. These will provide a visual tour of all features without requiring the API to be running.
+
+**📸 Capture Your Own Screenshots:**
+```bash
+# Run the screenshot capture guide
+python scripts/capture_screenshots.py
+
+# This will:
+# - Check if API is running
+# - Open all relevant URLs
+# - Provide capture guidance
+# - Create organized directory structure
+```
 
 ---
 
