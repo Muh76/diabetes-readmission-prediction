@@ -42,6 +42,9 @@ python scripts/serve_dashboards.py
 # Dashboards will be available at:
 # - Navigation Hub: http://localhost:8080
 # - All interactive dashboards accessible via the hub
+# - 10 comprehensive dashboards with real-time insights
+# - Interactive Plotly visualizations
+# - Professional navigation interface
 ```
 
 **Note**: The API requires the trained models to be present in the `models/` directory. If you encounter issues, please ensure all dependencies are installed and model files are available.
@@ -78,7 +81,7 @@ curl http://localhost:8000/health
 ## 📸 Screenshots & Live Demo
 
 ### **🚀 System Overview**
-*Coming Soon: Screenshots will be added here showing the complete system in action*
+![System Overview](docs/screenshots/system-overview.png)
 
 ### **📊 API Interface Screenshots**
 - **Swagger UI**: Interactive API documentation
@@ -87,17 +90,72 @@ curl http://localhost:8000/health
 - **Response Examples**: Sample API responses with explanations
 
 ### **📈 Dashboard Screenshots**
-- **Executive Summary**: High-level business insights
-- **ROI Validation**: Financial impact analysis and projections
-- **Risk Mitigation**: Risk management strategies and outcomes
-- **Clinical Outcomes**: Medical insights and patient outcomes
-- **Business Metrics**: Key performance indicators and trends
+
+#### **🏥 Executive Summary Dashboard**
+![Executive Summary](docs/screenshots/dashboard-executive-summary.png)
+*High-level overview with model performance, financial impact, patient risk distribution, and project timeline*
+
+#### **💰 ROI Validation Dashboard**
+![ROI Validation](docs/screenshots/dashboard-roi-validation.png)
+*Financial impact analysis with ROI scenarios, industry comparison, sensitivity analysis, and cost breakdown*
+
+#### **⚠️ Risk Mitigation Dashboard**
+![Risk Mitigation](docs/screenshots/dashboard-risk-mitigation.png)
+*Risk assessment matrix, cost analysis, timeline impact, and mitigation readiness status*
+
+#### **📊 Business Metrics Dashboard**
+![Business Metrics](docs/screenshots/dashboard-business-metrics.png)
+*Cost-benefit analysis, ROI by year, break-even timeline, and investment returns*
+
+#### **🏥 Clinical Outcomes Dashboard**
+![Clinical Outcomes](docs/screenshots/dashboard-clinical-outcomes.png)
+*Model performance metrics, patient risk categories, feature importance, and clinical compliance*
+
+#### **📋 Technical Documentation Dashboard**
+![Technical Documentation](docs/screenshots/dashboard-technical-docs.png)
+*API endpoints status, deployment requirements, performance metrics, and documentation quality*
+
+#### **💼 Business Cases Dashboard**
+![Business Cases](docs/screenshots/dashboard-business-cases.png)
+*Market size by use case, revenue projections, competitive landscape, and go-to-market strategy*
+
+#### **📈 Cost-Benefit Analysis Dashboard**
+![Cost-Benefit Analysis](docs/screenshots/dashboard-cost-benefit.png)
+*Investment vs returns, monthly savings, patient ROI, and implementation costs*
+
+#### **🔬 Implementation & Stakeholder Dashboard**
+![Implementation Dashboard](docs/screenshots/dashboard-implementation.png)
+*Implementation timeline, investment requirements, stakeholder influence matrix, and strategic partnerships*
+
+#### **🛠️ Technical Implementation Dashboard**
+![Technical Implementation](docs/screenshots/dashboard-technical-implementation.png)
+*Troubleshooting solutions, performance optimization, API documentation coverage, and deployment checklist*
 
 ### **🤖 Model Performance Screenshots**
-- **Performance Metrics**: Accuracy, ROC-AUC, and other ML metrics
-- **Feature Importance**: SHAP plots showing key risk factors
-- **Confusion Matrix**: Model classification results
-- **Training Progress**: MLflow experiment tracking
+
+#### **📊 Model Performance Comparison**
+![Model Performance](docs/screenshots/model-performance-comparison.png)
+*ROC-AUC, F1-Score, Accuracy, and Precision vs Recall comparison across all models*
+
+#### **🔍 SHAP Analysis & Feature Importance**
+![SHAP Analysis](docs/screenshots/shap-analysis.png)
+*SHAP summary plots, feature importance ranking, dependence plots, and interaction analysis*
+
+#### **📈 Data Distribution & Insights**
+![Data Distribution](docs/screenshots/data-distribution.png)
+*Clinical risk distribution, age group analysis, medication complexity, and socioeconomic factors*
+
+#### **📊 Clinical Insights & Risk Analysis**
+![Clinical Insights](docs/screenshots/clinical-insights.png)
+*Readmission rates by clinical risk, treatment complexity, length of stay, and demographic factors*
+
+#### **🔬 Hypothesis Testing Results**
+![Hypothesis Testing](docs/screenshots/hypothesis-testing.png)
+*Statistical significance analysis, A/B testing results, feature correlation, and business impact metrics*
+
+#### **📋 LIME Analysis**
+![LIME Analysis](docs/screenshots/lime-analysis.png)
+*Local interpretable model explanations for high-risk and low-risk patients*
 
 ### **💻 Interactive Dashboards**
 The project includes **10 comprehensive HTML dashboards** with real-time insights. **To view them properly, use the dashboard server:**
@@ -139,6 +197,34 @@ python scripts/capture_screenshots.py
 # - Provide capture guidance
 # - Create organized directory structure
 ```
+
+## 🎨 **Dashboard Gallery Preview**
+
+Your project includes **10 comprehensive interactive dashboards** that provide:
+
+### **🏥 Clinical & Medical Insights**
+- **Executive Summary**: Model performance (ROC-AUC: 95.3%, Accuracy: 93.1%)
+- **Clinical Outcomes**: Patient risk distribution, feature importance, compliance metrics
+- **Clinical Insights**: Readmission rates by severity, age groups, and risk categories
+
+### **💰 Business & Financial Analysis**
+- **ROI Validation**: 120-400% ROI scenarios with industry benchmarking
+- **Business Metrics**: Cost-benefit analysis, break-even timeline, investment returns
+- **Cost-Benefit**: $30.9M monthly savings, $1.625K ROI per patient
+- **Business Cases**: $3.2B market opportunity, 5-year revenue projection to $120M
+
+### **⚠️ Risk Management & Technical**
+- **Risk Mitigation**: Risk assessment matrix, cost analysis, timeline impact
+- **Technical Documentation**: API status, deployment requirements, performance metrics
+- **Technical Implementation**: Troubleshooting solutions, optimization metrics
+
+### **📊 Advanced Analytics**
+- **Model Performance**: Comprehensive comparison across 7 ML algorithms
+- **SHAP Analysis**: Feature importance, dependence plots, interaction analysis
+- **Data Distribution**: Clinical severity, medication complexity, socioeconomic factors
+- **Hypothesis Testing**: Statistical significance, A/B testing, business impact metrics
+
+**All dashboards feature interactive Plotly visualizations with real-time insights!**
 
 ---
 
