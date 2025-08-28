@@ -78,84 +78,120 @@ curl http://localhost:8000/health
 
 ---
 
-## 📸 Screenshots & Live Demo
+## 📊 **Dashboard & Visualization Showcase**
 
-### **🚀 System Overview**
-![System Overview](docs/screenshots/system-overview.png)
+### **🏥 Clinical & Medical Insights Dashboards**
 
-### **📊 API Interface Screenshots**
-- **Swagger UI**: Interactive API documentation
-- **Health Check**: System status and performance metrics
-- **Prediction Endpoint**: Real-time risk assessment interface
-- **Response Examples**: Sample API responses with explanations
-
-### **📈 Dashboard Screenshots**
-
-#### **🏥 Executive Summary Dashboard**
-![Executive Summary](docs/screenshots/dashboard-executive-summary.png)
+#### **Executive Summary Dashboard**
 *High-level overview with model performance, financial impact, patient risk distribution, and project timeline*
+- **Model Performance**: ROC-AUC: 95.3%, Accuracy: 93.1%, Precision: 99.5%, Recall: 86.7%
+- **Financial Impact**: Cost Savings: $58.8M, Quality Bonus: $1.2M, Penalty Avoidance: $1.8M
+- **Patient Risk Distribution**: High Risk (>70%): 42.8%, Moderate Risk (40-70%): 1.34%, Low Risk (<40%): 55.8%
+- **Project Timeline**: Phase 1 (Complete): 100%, Phase 2 (Current): 75%, Phase 3 (Planned): 25%
 
-#### **💰 ROI Validation Dashboard**
-![ROI Validation](docs/screenshots/dashboard-roi-validation.png)
-*Financial impact analysis with ROI scenarios, industry comparison, sensitivity analysis, and cost breakdown*
-
-#### **⚠️ Risk Mitigation Dashboard**
-![Risk Mitigation](docs/screenshots/dashboard-risk-mitigation.png)
-*Risk assessment matrix, cost analysis, timeline impact, and mitigation readiness status*
-
-#### **📊 Business Metrics Dashboard**
-![Business Metrics](docs/screenshots/dashboard-business-metrics.png)
-*Cost-benefit analysis, ROI by year, break-even timeline, and investment returns*
-
-#### **🏥 Clinical Outcomes Dashboard**
-![Clinical Outcomes](docs/screenshots/dashboard-clinical-outcomes.png)
+#### **Clinical Outcomes Dashboard**
 *Model performance metrics, patient risk categories, feature importance, and clinical compliance*
+- **Performance Metrics**: ROC-AUC: 95.3%, Accuracy: 93.1%, Precision: 99.5%, Recall: 86.7%
+- **Risk Categories**: High Risk (>70%): 15,488 patients, Moderate Risk (40-70%): 485 patients, Low Risk (<40%): 20,191 patients
+- **Feature Importance**: High Impact: Level 3, Medium Impact: Level 2, Low Impact: Level 1
+- **Clinical Compliance**: Compliance Score: 5/5
 
-#### **📋 Technical Documentation Dashboard**
-![Technical Documentation](docs/screenshots/dashboard-technical-docs.png)
-*API endpoints status, deployment requirements, performance metrics, and documentation quality*
-
-#### **💼 Business Cases Dashboard**
-![Business Cases](docs/screenshots/dashboard-business-cases.png)
-*Market size by use case, revenue projections, competitive landscape, and go-to-market strategy*
-
-#### **📈 Cost-Benefit Analysis Dashboard**
-![Cost-Benefit Analysis](docs/screenshots/dashboard-cost-benefit.png)
-*Investment vs returns, monthly savings, patient ROI, and implementation costs*
-
-#### **🔬 Implementation & Stakeholder Dashboard**
-![Implementation Dashboard](docs/screenshots/dashboard-implementation.png)
-*Implementation timeline, investment requirements, stakeholder influence matrix, and strategic partnerships*
-
-#### **🛠️ Technical Implementation Dashboard**
-![Technical Implementation](docs/screenshots/dashboard-technical-implementation.png)
-*Troubleshooting solutions, performance optimization, API documentation coverage, and deployment checklist*
-
-### **🤖 Model Performance Screenshots**
-
-#### **📊 Model Performance Comparison**
-![Model Performance](docs/screenshots/model-performance-comparison.png)
-*ROC-AUC, F1-Score, Accuracy, and Precision vs Recall comparison across all models*
-
-#### **🔍 SHAP Analysis & Feature Importance**
-![SHAP Analysis](docs/screenshots/shap-analysis.png)
-*SHAP summary plots, feature importance ranking, dependence plots, and interaction analysis*
-
-#### **📈 Data Distribution & Insights**
-![Data Distribution](docs/screenshots/data-distribution.png)
-*Clinical risk distribution, age group analysis, medication complexity, and socioeconomic factors*
-
-#### **📊 Clinical Insights & Risk Analysis**
-![Clinical Insights](docs/screenshots/clinical-insights.png)
+#### **Clinical Insights Dashboard**
 *Readmission rates by clinical risk, treatment complexity, length of stay, and demographic factors*
+- **Readmission Distribution**: No Readmission: 88.8%, Readmission <30 days: 11.2%
+- **Clinical Risk Impact**: Low: 7.8%, Medium: 9.4%, High: 12.1%, Critical: 14.3%
+- **Age Group Analysis**: Elderly: 11.8%, Middle: 10.8%, Senior: 10.3%, Young: 11.1%
+- **Treatment Complexity**: Low: 3.9%, Medium: 7.5%, High: 9.2%, Critical: 11.8%
 
-#### **🔬 Hypothesis Testing Results**
-![Hypothesis Testing](docs/screenshots/hypothesis-testing.png)
-*Statistical significance analysis, A/B testing results, feature correlation, and business impact metrics*
+### **💰 Business & Financial Analysis Dashboards**
 
-#### **📋 LIME Analysis**
-![LIME Analysis](docs/screenshots/lime-analysis.png)
-*Local interpretable model explanations for high-risk and low-risk patients*
+#### **ROI Validation Dashboard**
+*Financial impact analysis with ROI scenarios, industry comparison, sensitivity analysis, and cost breakdown*
+- **ROI Scenarios**: Pessimistic: 120%, Realistic: 250%, Optimistic: 400%
+- **Industry Comparison**: Readmission Prediction: 275%, Diabetes Management: 350%, General Healthcare AI: 200%
+- **Sensitivity Analysis**: ROI increases with readmission reduction, peaks at 15% reduction
+- **Cost Breakdown**: Implementation Cost: $245K, Annual Ops Cost: $50K
+
+#### **Business Metrics Dashboard**
+*Cost-benefit analysis, ROI by year, break-even timeline, and investment returns*
+- **Cost-Benefit Analysis**: Net Benefit: 58, Cost Savings: 58, Implementation Cost: ~0
+- **ROI by Year**: Year 1: 185.0x, Year 2: 369.9x, Year 3: 616.5x
+- **Break-even Timeline**: Achieved in Month 1 with $5.1M savings
+- **Investment Returns**: Steady growth from $0M to $300M over 4 years
+
+#### **Cost-Benefit Analysis Dashboard**
+*Investment vs returns, monthly savings, patient ROI, and implementation costs*
+- **Monthly Savings**: Month 1: $5.1M, Month 6: $30.9M (cumulative)
+- **Patient ROI**: $1.625K per patient
+- **Implementation Costs**: Development: $0.1M, Testing: $0.1M, Deployment: $0.1M
+- **Investment vs Returns**: No investment cost, returns reach $300M by Year 5
+
+#### **Business Cases Dashboard**
+*Market size by use case, revenue projections, competitive landscape, and go-to-market strategy*
+- **Market Size by Use Case**: Hospital Readmission Management: $2.1B, Insurance Risk Assessment: $1.8B, Pharmaceutical Patient Monitoring: $3.2B
+- **Revenue Projections**: Year 1: $2M, Year 2: $8M, Year 3: $25M, Year 4: $60M, Year 5: $120M
+- **Competitive Landscape**: Optum: 25%, Cerner: 20%, Health Catalyst: 15%, Our Platform: 5%
+- **Go-to-Market Strategy**: Pilot Program: 8 customers, Market Expansion: 20 customers, Scale & Partnerships: 100 customers
+
+### **⚠️ Risk Management & Technical Dashboards**
+
+#### **Risk Mitigation Dashboard**
+*Risk assessment matrix, cost analysis, timeline impact, and mitigation readiness status*
+- **Risk Score Matrix**: Model Drift (20%, Impact 2), FDA (25%, Impact 5), Workflow (40%, Impact 4)
+- **Cost of Risks**: FDA: $200K, HIPAA: $75K, Infra Scaling: $50K, State Regs: $50K
+- **Timeline Impact**: FDA: 24 months, Clinical Val: 12 months, Workflow: 6 months
+- **Mitigation Readiness**: 42.9% (▼ -7.1% recent decrease)
+
+#### **Technical Documentation Dashboard**
+*API endpoints status, deployment requirements, performance metrics, and documentation quality*
+- **API Endpoints Status**: All endpoints (health, predict, predict/batch, model/info, model/update) operational
+- **Deployment Requirements**: Minimum: 2 cores, Recommended: 4 cores, Production: 8 cores
+- **Performance Metrics**: Response Time: 200ms, Throughput: 1000 req/s
+- **Documentation Quality**: 87.5% (▼ -2.5% recent decrease)
+
+#### **Technical Implementation Dashboard**
+*Troubleshooting solutions, performance optimization, API documentation coverage, and deployment checklist*
+- **Troubleshooting Solutions**: 4 solutions for each category (API, Model, Database, Memory, Performance)
+- **Performance Optimization**: Response Time: 200ms, Throughput: 1000/s, Error Rate: 1%, Resource Usage: 80%
+- **API Documentation Coverage**: 95% (▲ +5% recent increase)
+- **Deployment Checklist**: Performance Tests: Passed, Security Scan: Passed, Load Testing: Completed, Monitoring: Active
+
+### **📊 Advanced Analytics & ML Performance**
+
+#### **Model Performance Comparison Dashboard**
+*Comprehensive comparison across 7 ML algorithms with detailed metrics*
+- **ROC-AUC Scores**: Random Forest (Optimized): 0.953, LightGBM: 0.952, XGBoost: 0.950, CatBoost: 0.947
+- **F1-Scores**: XGBoost (Optimized): 0.926, LightGBM: 0.925, XGBoost: 0.923, Random Forest (Optimized): 0.919
+- **Accuracy Scores**: XGBoost (Optimized): 0.931, LightGBM: 0.930, XGBoost: 0.928, Random Forest (Optimized): 0.924
+- **Precision vs Recall**: Logistic Regression achieves 100% precision but only 68% recall
+
+#### **SHAP Analysis & Feature Importance**
+*Advanced model interpretability with SHAP plots and feature analysis*
+- **Top Features by Impact**: service_utilization_score (1.38), clinical_risk_score (1.15), age_midpoint (1.05)
+- **SHAP Summary Plots**: Global feature importance visualization with color-coded feature values
+- **Dependence Plots**: Feature interaction analysis for num_medications, time_in_hospital, number_diagnoses
+- **Interaction Analysis**: num_medications interactions with clinical_risk_score, time_in_hospital, num_procedures
+
+#### **Data Distribution & Clinical Insights**
+*Comprehensive data analysis across multiple dimensions*
+- **Clinical Risk Distribution**: High Risk: 70,000 patients, Medium Risk: 27,000 patients, Low Risk: 4,000-5,000 patients
+- **Age Risk Groups**: Critical Risk: 45,000 patients, High Risk: 40,000 patients, Medium Risk: 15,000 patients, Low Risk: 5,000 patients
+- **Medication Complexity**: Peak around score 10-12, most patients have moderate complexity
+- **Socioeconomic Factors**: Risk Score 1: 50,000+ patients, Risk Score 3: 28,000 patients
+
+#### **Hypothesis Testing & Statistical Analysis**
+*Rigorous statistical validation and business impact assessment*
+- **Feature Testing**: 89 total features tested, 35 statistically significant, 54 non-significant
+- **A/B Testing Results**: Control Group: 34.8% readmission rate, Intervention Group: 19.9% readmission rate
+- **Business Impact**: 42.8% relative improvement, 14.9% absolute improvement
+- **Statistical Power**: High power achieved with 101,766 patients, 95% confidence level
+
+#### **LIME Analysis for Model Interpretability**
+*Local interpretable model explanations for individual predictions*
+- **High Risk Patient Analysis**: Prediction probability 1.000, top risk factors: number_emergency, service_utilization_score, number_outpatient
+- **Low Risk Patient Analysis**: Top protective factors: service_utilization_score, clinical_risk_score, age_midpoint
+- **Feature Contributions**: SHAP values showing individual feature impact on predictions
+- **Cumulative Impact**: How feature contributions accumulate to final prediction
 
 ### **💻 Interactive Dashboards**
 The project includes **10 comprehensive HTML dashboards** with real-time insights. **To view them properly, use the dashboard server:**
@@ -184,18 +220,16 @@ python scripts/serve_dashboards.py
 
 *All dashboards are interactive HTML files with Plotly visualizations that require a web server to display properly*
 
-**📱 Screenshots Coming Soon**: We're preparing high-quality screenshots to showcase the system's capabilities. These will provide a visual tour of all features without requiring the API to be running.
+**📊 Dashboard Access**: All dashboards are available as interactive HTML files with Plotly visualizations. Use the dashboard server to view them properly:
 
-**📸 Capture Your Own Screenshots:**
 ```bash
-# Run the screenshot capture guide
-python scripts/capture_screenshots.py
+# Run the dashboard server
+python scripts/serve_dashboards.py
 
 # This will:
-# - Check if API is running
-# - Open all relevant URLs
-# - Provide capture guidance
-# - Create organized directory structure
+# - Start a local server on http://localhost:8080
+# - Open a navigation hub in your browser
+# - Allow proper viewing of all interactive dashboards
 ```
 
 ## 🎨 **Dashboard Gallery Preview**
