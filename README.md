@@ -80,9 +80,16 @@ curl http://localhost:8000/health
 
 ## 📊 **Dashboard & Visualization Showcase**
 
+> **📸 Screenshot Setup**: The images below are placeholders. To add actual screenshots:
+> 1. Start the dashboard server: `python scripts/serve_dashboards.py`
+> 2. Capture screenshots of your dashboards
+> 3. Save them to `assets/dashboards/` with the filenames shown
+> 4. The images will automatically display here!
+
 ### **🏥 Clinical & Medical Insights Dashboards**
 
 #### **Executive Summary Dashboard**
+![Executive Summary Dashboard](assets/dashboards/executive_summary.png)
 *High-level overview with model performance, financial impact, patient risk distribution, and project timeline*
 - **Model Performance**: ROC-AUC: 95.3%, Accuracy: 93.1%, Precision: 99.5%, Recall: 86.7%
 - **Financial Impact**: Cost Savings: $58.8M, Quality Bonus: $1.2M, Penalty Avoidance: $1.8M
@@ -106,6 +113,7 @@ curl http://localhost:8000/health
 ### **💰 Business & Financial Analysis Dashboards**
 
 #### **ROI Validation Dashboard**
+![ROI Validation Dashboard](assets/dashboards/roi_validation.png)
 *Financial impact analysis with ROI scenarios, industry comparison, sensitivity analysis, and cost breakdown*
 - **ROI Scenarios**: Pessimistic: 120%, Realistic: 250%, Optimistic: 400%
 - **Industry Comparison**: Readmission Prediction: 275%, Diabetes Management: 350%, General Healthcare AI: 200%
@@ -113,6 +121,7 @@ curl http://localhost:8000/health
 - **Cost Breakdown**: Implementation Cost: $245K, Annual Ops Cost: $50K
 
 #### **Business Metrics Dashboard**
+![Business Metrics Dashboard](assets/dashboards/business_metrics.png)
 *Cost-benefit analysis, ROI by year, break-even timeline, and investment returns*
 - **Cost-Benefit Analysis**: Net Benefit: 58, Cost Savings: 58, Implementation Cost: ~0
 - **ROI by Year**: Year 1: 185.0x, Year 2: 369.9x, Year 3: 616.5x
@@ -136,6 +145,7 @@ curl http://localhost:8000/health
 ### **⚠️ Risk Management & Technical Dashboards**
 
 #### **Risk Mitigation Dashboard**
+![Risk Mitigation Dashboard](assets/dashboards/risk_mitigation.png)
 *Risk assessment matrix, cost analysis, timeline impact, and mitigation readiness status*
 - **Risk Score Matrix**: Model Drift (20%, Impact 2), FDA (25%, Impact 5), Workflow (40%, Impact 4)
 - **Cost of Risks**: FDA: $200K, HIPAA: $75K, Infra Scaling: $50K, State Regs: $50K
@@ -159,6 +169,7 @@ curl http://localhost:8000/health
 ### **📊 Advanced Analytics & ML Performance**
 
 #### **Model Performance Comparison Dashboard**
+![Model Performance Dashboard](assets/dashboards/model_performance.png)
 *Comprehensive comparison across 7 ML algorithms with detailed metrics*
 - **ROC-AUC Scores**: Random Forest (Optimized): 0.953, LightGBM: 0.952, XGBoost: 0.950, CatBoost: 0.947
 - **F1-Scores**: XGBoost (Optimized): 0.926, LightGBM: 0.925, XGBoost: 0.923, Random Forest (Optimized): 0.919
