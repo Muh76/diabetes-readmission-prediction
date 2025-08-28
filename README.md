@@ -80,11 +80,7 @@ curl http://localhost:8000/health
 
 ## 📊 **Dashboard & Visualization Showcase**
 
-> **📸 Screenshot Setup**: The images below are placeholders. To add actual screenshots:
-> 1. Start the dashboard server: `python scripts/serve_dashboards.py`
-> 2. Capture screenshots of your dashboards
-> 3. Save them to `assets/dashboards/` with the filenames shown
-> 4. The images will automatically display here!
+> **📸 Dashboard Images**: The dashboard images below are referenced from `assets/dashboards/`. Save your dashboard screenshots with the exact filenames shown to display them here!
 
 ### **🏥 Clinical & Medical Insights Dashboards**
 
@@ -97,6 +93,7 @@ curl http://localhost:8000/health
 - **Project Timeline**: Phase 1 (Complete): 100%, Phase 2 (Current): 75%, Phase 3 (Planned): 25%
 
 #### **Clinical Outcomes Dashboard**
+![Clinical Outcomes Dashboard](assets/dashboards/clinical_outcomes.png)
 *Model performance metrics, patient risk categories, feature importance, and clinical compliance*
 - **Performance Metrics**: ROC-AUC: 95.3%, Accuracy: 93.1%, Precision: 99.5%, Recall: 86.7%
 - **Risk Categories**: High Risk (>70%): 15,488 patients, Moderate Risk (40-70%): 485 patients, Low Risk (<40%): 20,191 patients
@@ -104,6 +101,7 @@ curl http://localhost:8000/health
 - **Clinical Compliance**: Compliance Score: 5/5
 
 #### **Clinical Insights Dashboard**
+![Clinical Insights Dashboard](assets/dashboards/clinical_insights.png)
 *Readmission rates by clinical risk, treatment complexity, length of stay, and demographic factors*
 - **Readmission Distribution**: No Readmission: 88.8%, Readmission <30 days: 11.2%
 - **Clinical Risk Impact**: Low: 7.8%, Medium: 9.4%, High: 12.1%, Critical: 14.3%
@@ -129,6 +127,7 @@ curl http://localhost:8000/health
 - **Investment Returns**: Steady growth from $0M to $300M over 4 years
 
 #### **Cost-Benefit Analysis Dashboard**
+![Cost-Benefit Analysis Dashboard](assets/dashboards/cost_benefit.png)
 *Investment vs returns, monthly savings, patient ROI, and implementation costs*
 - **Monthly Savings**: Month 1: $5.1M, Month 6: $30.9M (cumulative)
 - **Patient ROI**: $1.625K per patient
@@ -136,6 +135,7 @@ curl http://localhost:8000/health
 - **Investment vs Returns**: No investment cost, returns reach $300M by Year 5
 
 #### **Business Cases Dashboard**
+![Business Cases Dashboard](assets/dashboards/business_cases.png)
 *Market size by use case, revenue projections, competitive landscape, and go-to-market strategy*
 - **Market Size by Use Case**: Hospital Readmission Management: $2.1B, Insurance Risk Assessment: $1.8B, Pharmaceutical Patient Monitoring: $3.2B
 - **Revenue Projections**: Year 1: $2M, Year 2: $8M, Year 3: $25M, Year 4: $60M, Year 5: $120M
@@ -153,6 +153,7 @@ curl http://localhost:8000/health
 - **Mitigation Readiness**: 42.9% (▼ -7.1% recent decrease)
 
 #### **Technical Documentation Dashboard**
+![Technical Documentation Dashboard](assets/dashboards/technical_documentation.png)
 *API endpoints status, deployment requirements, performance metrics, and documentation quality*
 - **API Endpoints Status**: All endpoints (health, predict, predict/batch, model/info, model/update) operational
 - **Deployment Requirements**: Minimum: 2 cores, Recommended: 4 cores, Production: 8 cores
@@ -160,6 +161,7 @@ curl http://localhost:8000/health
 - **Documentation Quality**: 87.5% (▼ -2.5% recent decrease)
 
 #### **Technical Implementation Dashboard**
+![Technical Implementation Dashboard](assets/dashboards/technical_implementation.png)
 *Troubleshooting solutions, performance optimization, API documentation coverage, and deployment checklist*
 - **Troubleshooting Solutions**: 4 solutions for each category (API, Model, Database, Memory, Performance)
 - **Performance Optimization**: Response Time: 200ms, Throughput: 1000/s, Error Rate: 1%, Resource Usage: 80%
@@ -177,6 +179,7 @@ curl http://localhost:8000/health
 - **Precision vs Recall**: Logistic Regression achieves 100% precision but only 68% recall
 
 #### **SHAP Analysis & Feature Importance**
+![SHAP Analysis Dashboard](assets/dashboards/shap_analysis.png)
 *Advanced model interpretability with SHAP plots and feature analysis*
 - **Top Features by Impact**: service_utilization_score (1.38), clinical_risk_score (1.15), age_midpoint (1.05)
 - **SHAP Summary Plots**: Global feature importance visualization with color-coded feature values
@@ -184,6 +187,7 @@ curl http://localhost:8000/health
 - **Interaction Analysis**: num_medications interactions with clinical_risk_score, time_in_hospital, num_procedures
 
 #### **Data Distribution & Clinical Insights**
+![Data Distribution Dashboard](assets/dashboards/data_distribution.png)
 *Comprehensive data analysis across multiple dimensions*
 - **Clinical Risk Distribution**: High Risk: 70,000 patients, Medium Risk: 27,000 patients, Low Risk: 4,000-5,000 patients
 - **Age Risk Groups**: Critical Risk: 45,000 patients, High Risk: 40,000 patients, Medium Risk: 15,000 patients, Low Risk: 5,000 patients
@@ -191,6 +195,7 @@ curl http://localhost:8000/health
 - **Socioeconomic Factors**: Risk Score 1: 50,000+ patients, Risk Score 3: 28,000 patients
 
 #### **Hypothesis Testing & Statistical Analysis**
+![Hypothesis Testing Dashboard](assets/dashboards/hypothesis_testing.png)
 *Rigorous statistical validation and business impact assessment*
 - **Feature Testing**: 89 total features tested, 35 statistically significant, 54 non-significant
 - **A/B Testing Results**: Control Group: 34.8% readmission rate, Intervention Group: 19.9% readmission rate
@@ -198,6 +203,7 @@ curl http://localhost:8000/health
 - **Statistical Power**: High power achieved with 101,766 patients, 95% confidence level
 
 #### **LIME Analysis for Model Interpretability**
+![LIME Analysis Dashboard](assets/dashboards/lime_analysis.png)
 *Local interpretable model explanations for individual predictions*
 - **High Risk Patient Analysis**: Prediction probability 1.000, top risk factors: number_emergency, service_utilization_score, number_outpatient
 - **Low Risk Patient Analysis**: Top protective factors: service_utilization_score, clinical_risk_score, age_midpoint
