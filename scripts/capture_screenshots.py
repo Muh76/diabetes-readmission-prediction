@@ -34,7 +34,23 @@ def check_api_status():
             return False
     except requests.exceptions.RequestException:
         print("❌ API is not running. Please start it first:")
-        print("   cd notebooks && python app.py")
+        print("   python notebooks/app.py")
+        return False
+
+
+def check_dashboard_server():
+    """Check if the dashboard server is running locally."""
+    try:
+        response = requests.get("http://localhost:8080/", timeout=5)
+        if response.status_code == 200:
+            print("✅ Dashboard server is running at http://localhost:8080")
+            return True
+        else:
+            print("⚠️  Dashboard server responded but with unexpected status")
+            return False
+    except requests.exceptions.RequestException:
+        print("❌ Dashboard server is not running. Start it with:")
+        print("   python scripts/serve_dashboards.py")
         return False
 
 
@@ -95,14 +111,29 @@ def print_screenshot_guide():
 
 def open_urls_for_screenshots():
     """Open URLs in browser for easy screenshot capture."""
-    urls = [
+    api_urls = [
         "http://localhost:8000/docs",
         "http://localhost:8000/health",
         "http://localhost:8000/",
     ]
 
+    dashboard_urls = [
+        "http://localhost:8080/",
+        "http://localhost:8080/executive_summary_final.html",
+        "http://localhost:8080/roi_validation_dashboard.html",
+    ]
+
     print("\n🌐 **Opening API URLs for screenshots:**")
-    for url in urls:
+    for url in api_urls:
+        print(f"   Opening: {url}")
+        try:
+            webbrowser.open(url)
+            time.sleep(1)  # Delay between opens
+        except Exception as e:
+            print(f"   Error opening {url}: {e}")
+
+    print("\n📊 **Opening Dashboard URLs for screenshots:**")
+    for url in dashboard_urls:
         print(f"   Opening: {url}")
         try:
             webbrowser.open(url)
@@ -172,22 +203,28 @@ def main():
     # Check API status
     api_running = check_api_status()
 
+    # Check dashboard server status
+    dashboard_running = check_dashboard_server()
+
     # Create screenshots directory
     create_screenshots_directory()
 
     # Print comprehensive guide
     print_screenshot_guide()
 
-    # Open URLs if API is running
-    if api_running:
+    # Open URLs if services are running
+    if api_running and dashboard_running:
         open_urls_for_screenshots()
         print("\n🎉 **Ready to capture screenshots!**")
         print("   • Use the URLs above to navigate to different parts of the system")
         print("   • Take screenshots of each component")
         print("   • Save them to docs/screenshots/ with descriptive names")
     else:
-        print("\n⚠️  **Start the API first to capture live screenshots:**")
-        print("   cd notebooks && python app.py")
+        print("\n⚠️  **Start the services first to capture live screenshots:**")
+        if not api_running:
+            print("   • Start API: python notebooks/app.py")
+        if not dashboard_running:
+            print("   • Start Dashboard Server: python scripts/serve_dashboards.py")
         print("   Then run this script again")
 
     print("\n📚 **Next Steps:**")

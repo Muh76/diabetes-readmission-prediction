@@ -26,13 +26,22 @@ The API is designed to run locally for development and testing. You can see the 
 ./start_api.sh
 
 # Option 2: Manual start
-cd notebooks
-python app.py
+python notebooks/app.py
 
 # API will be available at:
 # - Main API: http://localhost:8000
 # - Health Check: http://localhost:8000/health
 # - Interactive Docs: http://localhost:8000/docs
+```
+
+**Starting the Dashboards:**
+```bash
+# Start dashboard server
+python scripts/serve_dashboards.py
+
+# Dashboards will be available at:
+# - Navigation Hub: http://localhost:8080
+# - All interactive dashboards accessible via the hub
 ```
 
 **Note**: The API requires the trained models to be present in the `models/` directory. If you encounter issues, please ensure all dependencies are installed and model files are available.
@@ -91,16 +100,31 @@ curl http://localhost:8000/health
 - **Training Progress**: MLflow experiment tracking
 
 ### **💻 Interactive Dashboards**
-The project includes **10 comprehensive HTML dashboards** with real-time insights:
+The project includes **10 comprehensive HTML dashboards** with real-time insights. **To view them properly, use the dashboard server:**
 
-1. **[Executive Summary Dashboard](notebooks/executive_summary_final.html)** - High-level overview
-2. **[ROI Validation Dashboard](notebooks/roi_validation_dashboard.html)** - Financial impact analysis
-3. **[Risk Mitigation Dashboard](notebooks/risk_mitigation_dashboard.html)** - Risk management insights
-4. **[Business Metrics Dashboard](notebooks/business_metrics_final.html)** - KPI tracking
-5. **[Clinical Outcomes Dashboard](notebooks/clinical_outcomes_final.html)** - Medical insights
-6. **[Technical Documentation Dashboard](notebooks/technical_documentation_dashboard.html)** - System details
+```bash
+# Start the dashboard server
+python scripts/serve_dashboards.py
 
-*All dashboards are interactive HTML files with Plotly visualizations*
+# This will:
+# - Start a local server on http://localhost:8080
+# - Open a navigation hub in your browser
+# - Allow proper viewing of all interactive dashboards
+```
+
+**Available Dashboards:**
+1. **Executive Summary Dashboard** - High-level overview and key insights
+2. **ROI Validation Dashboard** - Financial impact analysis and ROI projections
+3. **Risk Mitigation Dashboard** - Risk management strategies and outcomes
+4. **Business Metrics Dashboard** - KPI tracking and business performance
+5. **Clinical Outcomes Dashboard** - Medical insights and patient outcomes
+6. **Technical Documentation Dashboard** - System architecture and technical details
+7. **Cost Benefit Analysis** - Cost-benefit analysis and projections
+8. **Final ROI Validation** - Comprehensive ROI validation results
+9. **Improved Risk Mitigation** - Enhanced risk mitigation strategies
+10. **Technical Documentation** - Complete technical documentation
+
+*All dashboards are interactive HTML files with Plotly visualizations that require a web server to display properly*
 
 **📱 Screenshots Coming Soon**: We're preparing high-quality screenshots to showcase the system's capabilities. These will provide a visual tour of all features without requiring the API to be running.
 

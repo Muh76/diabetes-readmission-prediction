@@ -136,16 +136,16 @@ def load_models():
 
     try:
         # Load feature names and scaler
-        feature_names = joblib.load("./feature_names.pkl")
-        feature_scaler = joblib.load("./feature_scaler.pkl")
+        feature_names = joblib.load("feature_names.pkl")
+        feature_scaler = joblib.load("feature_scaler.pkl")
         logger.info(f"✅ Loaded {len(feature_names)} feature names")
 
         # Load only small models (exclude large ones)
         model_files = {
-            "logistic_regression": "./models/logistic_regression.pkl",
-            "xgboost": "./models/xgboost.pkl",
-            "lightgbm": "./models/lightgbm.pkl",
-            "catboost": "./models/catboost.pkl",
+            "logistic_regression": "models/logistic_regression.pkl",
+            "xgboost": "models/xgboost.pkl",
+            "lightgbm": "models/lightgbm.pkl",
+            "catboost": "models/catboost.pkl",
         }
 
         for model_name, model_path in model_files.items():

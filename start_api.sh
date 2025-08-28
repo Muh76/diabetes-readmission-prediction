@@ -12,10 +12,7 @@ if [ ! -f "notebooks/app.py" ]; then
     exit 1
 fi
 
-# Navigate to notebooks directory
-cd notebooks
-
-echo "📁 Starting API from notebooks directory..."
+echo "📁 Starting API from project root directory..."
 echo "🌐 API will be available at: http://localhost:8000"
 echo "📚 API Documentation: http://localhost:8000/docs"
 echo "❤️  Health Check: http://localhost:8000/health"
@@ -23,5 +20,5 @@ echo ""
 echo "Press Ctrl+C to stop the API"
 echo ""
 
-# Start the API
-python app.py
+# Start the API from root directory to ensure correct file paths
+python notebooks/app.py
