@@ -501,6 +501,20 @@ async def root():
         "docs": "/docs",
         "health": "/health",
         "models": "/models",
+        "timestamp": datetime.now().isoformat(),
+        "deployment": "Railway Production",
+    }
+
+
+# Simple health check for Railway deployment
+@app.get("/health")
+async def simple_health_check():
+    """Simple health check endpoint for Railway deployment"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "service": "Diabetes Readmission API",
+        "version": "2.0.0",
     }
 
 
@@ -521,4 +535,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 if __name__ == "__main__":
     logger.info("🚀 Starting FastAPI server...")
+    logger.info("✅ Health endpoint available at /health")
+    logger.info("✅ Root endpoint available at /")
+    logger.info("✅ API docs available at /docs")
     uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info", access_log=True)

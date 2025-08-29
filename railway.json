@@ -1,13 +1,13 @@
-{
+ak{
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "DOCKERFILE",
-    "dockerfilePath": "Dockerfile"
+    "dockerfilePath": "Dockerfile.fastapi"
   },
   "deploy": {
     "startCommand": "uvicorn app:app --host 0.0.0.0 --port $PORT --workers 1",
-    "healthcheckPath": "/health",
-    "healthcheckTimeout": 300,
+    "healthcheckPath": "/",
+    "healthcheckTimeout": 600,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
