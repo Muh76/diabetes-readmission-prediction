@@ -557,6 +557,20 @@ async def simple_health_check():
     }
 
 
+# Immediate health check for Railway (no dependencies)
+@app.get("/")
+async def immediate_health_check():
+    """Immediate health check that Railway can reach instantly"""
+    return {
+        "status": "starting",
+        "message": "FastAPI app is starting up",
+        "timestamp": datetime.now().isoformat(),
+        "service": "Diabetes Readmission API",
+        "version": "2.0.0",
+        "endpoints": {"health": "/health", "ready": "/ready", "docs": "/docs"},
+    }
+
+
 # Readiness check for Railway
 @app.get("/ready")
 async def readiness_check():
@@ -603,5 +617,7 @@ if __name__ == "__main__":
     logger.info("🚀 Starting FastAPI server...")
     logger.info("✅ Health endpoint available at /health")
     logger.info("✅ Root endpoint available at /")
+    logger.info("✅ Ready endpoint available at /ready")
     logger.info("✅ API docs available at /docs")
+    logger.info("🌐 Server will be available at http://0.0.0.0:8000")
     uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info", access_log=True)
