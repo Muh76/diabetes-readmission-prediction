@@ -59,10 +59,18 @@ async def startup_event():
 
     startup_time = datetime.now()
     logger.info("🚀 FastAPI application starting up...")
+    logger.info(f"🔧 Working directory: {os.getcwd()}")
+    logger.info(f"🔧 Environment PORT: {os.environ.get('PORT', 'Not set')}")
+    logger.info(f"🔧 Python path: {sys.path}")
 
     try:
         # Load models and features
         logger.info("📦 Loading ML models and features...")
+
+        # List files in current directory
+        logger.info(f"📁 Files in current directory: {os.listdir('.')}")
+        if os.path.exists("models"):
+            logger.info(f"📁 Files in models directory: {os.listdir('models')}")
 
         # Load feature scaler
         if os.path.exists("feature_scaler.pkl"):
@@ -99,9 +107,11 @@ async def startup_event():
         logger.info(
             f"🎯 Startup completed. Models loaded: {len([m for m in models.values() if m is not None])}"
         )
+        logger.info("🚀 FastAPI app is ready to serve requests!")
 
     except Exception as e:
         logger.error(f"❌ Startup failed: {e}")
+        logger.error(f"❌ Exception details: {type(e).__name__}: {str(e)}")
         raise e
 
 
@@ -619,5 +629,10 @@ if __name__ == "__main__":
     logger.info("✅ Root endpoint available at /")
     logger.info("✅ Ready endpoint available at /ready")
     logger.info("✅ API docs available at /docs")
-    logger.info("🌐 Server will be available at http://0.0.0.0:8000")
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info", access_log=True)
+
+    # Get port from environment variable (Railway sets this)
+    port = int(os.environ.get("PORT", 8000))
+    logger.info(f"🌐 Server will be available at http://0.0.0.0:{port}")
+    logger.info(f"🔧 Using port: {port}")
+
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info", access_log=True)
