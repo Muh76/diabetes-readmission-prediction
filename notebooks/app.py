@@ -69,17 +69,33 @@ startup_time = None
 
 # Pydantic models for input validation
 class PatientData(BaseModel):
-    """Patient data input model with validation"""
-
-    num_medications: int = Field(..., ge=0, le=100, description="Number of medications")
-    time_in_hospital: int = Field(
-        ..., ge=1, le=365, description="Time in hospital (days)"
-    )
-    number_diagnoses: int = Field(..., ge=1, le=50, description="Number of diagnoses")
+    """Patient data input model with validation - matches all engineered features (16 total)"""
+    
+    # Core patient identifiers
+    encounter_id: int = Field(..., description="Unique encounter identifier")
+    patient_nbr: int = Field(..., description="Unique patient number")
+    
+    # Admission and discharge information
+    admission_type_id: int = Field(..., ge=1, le=9, description="Type of admission")
+    discharge_disposition_id: int = Field(..., ge=1, le=30, description="Discharge disposition")
+    admission_source_id: int = Field(..., ge=1, le=25, description="Source of admission")
+    
+    # Hospital stay metrics
+    time_in_hospital: int = Field(..., ge=1, le=365, description="Time in hospital (days)")
+    num_lab_procedures: int = Field(..., ge=0, le=1000, description="Number of lab procedures")
     num_procedures: int = Field(..., ge=0, le=100, description="Number of procedures")
-    num_lab_procedures: int = Field(
-        ..., ge=0, le=1000, description="Number of lab procedures"
-    )
+    num_medications: int = Field(..., ge=0, le=100, description="Number of medications")
+    
+    # Visit history
+    number_outpatient: int = Field(..., ge=0, le=100, description="Number of outpatient visits")
+    number_emergency: int = Field(..., ge=0, le=100, description="Number of emergency visits")
+    number_inpatient: int = Field(..., ge=0, le=100, description="Number of inpatient visits")
+    number_diagnoses: int = Field(..., ge=1, le=50, description="Number of diagnoses")
+    
+    # Engineered features
+    age_midpoint: int = Field(..., ge=0, le=100, description="Age group midpoint")
+    service_utilization_score: int = Field(..., ge=0, le=10, description="Service utilization score")
+    clinical_risk_score: int = Field(..., ge=0, le=10, description="Clinical risk score")
 
     @validator("*")
     def validate_positive(cls, v):  # noqa: N805
@@ -135,7 +151,7 @@ def load_models():
     global models, feature_names, feature_scaler, model_metadata
 
     try:
-        # Load feature names and scaler
+        # Load feature names and scaler - use the full feature names that match the training data
         feature_names = joblib.load("feature_names.pkl")
         feature_scaler = joblib.load("feature_scaler.pkl")
         logger.info(f"✅ Loaded {len(feature_names)} feature names")
@@ -221,6 +237,29 @@ async def health_check():
         ) from e
 
 
+# Feature names endpoint
+@app.get("/feature-names")
+async def get_feature_names():
+    """Get the list of feature names expected by the model"""
+    try:
+        if not feature_names:
+            raise HTTPException(
+                status_code=500, 
+                detail="Feature names not loaded. Please check if models are properly initialized."
+            )
+        
+        return {
+            "feature_count": len(feature_names),
+            "features": feature_names,
+            "description": "List of engineered features expected by the ML model"
+        }
+    except Exception as e:
+        logger.error(f"Failed to get feature names: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get feature names: {str(e)}"
+        ) from e
+
+
 # Model information endpoint
 @app.get("/models", response_model=list[ModelInfo])
 async def get_models_info():
@@ -289,14 +328,38 @@ async def predict_readmission(
                 detail=f"Model '{model_name}' not available. Available models: {available_models}",
             )
 
-        # Prepare input data
-        input_data = pd.DataFrame([patient.dict()])
-
+        # Prepare input data - ensure correct feature order
+        patient_dict = patient.dict()
+        input_data = pd.DataFrame([patient_dict])
+        
+        # Ensure features are in the correct order as expected by the model
+        if feature_names:
+            # Check if we have all required features
+            missing_features = [f for f in feature_names if f not in input_data.columns]
+            if missing_features:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Missing required features: {missing_features}"
+                )
+            
+            # Select only the features that the model expects
+            input_data = input_data[feature_names]
+            logger.info(f"✅ Selected {len(input_data.columns)} features for prediction")
+        
         # Validate feature count
         if len(input_data.columns) != len(feature_names):
             logger.warning(
                 f"Feature count mismatch: expected {len(feature_names)}, got {len(input_data.columns)}"
             )
+            raise HTTPException(
+                status_code=400,
+                detail=f"Feature count mismatch: expected {len(feature_names)}, got {len(input_data.columns)}"
+            )
+
+        # Scale features if scaler is available
+        if feature_scaler is not None:
+            input_data = feature_scaler.transform(input_data)
+            logger.info(f"✅ Features scaled using {type(feature_scaler).__name__}")
 
         # Make prediction
         model = models[model_name]
@@ -320,7 +383,7 @@ async def predict_readmission(
         else:
             confidence_level = "Unknown"
 
-        # Identify risk factors (simplified)
+        # Identify risk factors based on engineered features
         risk_factors = []
         if patient.num_medications > 10:
             risk_factors.append("High medication count")
@@ -328,6 +391,12 @@ async def predict_readmission(
             risk_factors.append("Extended hospital stay")
         if patient.number_diagnoses > 5:
             risk_factors.append("Multiple diagnoses")
+        if patient.clinical_risk_score > 7:
+            risk_factors.append("High clinical risk score")
+        if patient.service_utilization_score > 7:
+            risk_factors.append("High service utilization")
+        if patient.age_midpoint > 70:
+            risk_factors.append("Advanced age group")
 
         # Calculate processing time
         processing_time = (time.time() - start_time) * 1000  # Convert to milliseconds
