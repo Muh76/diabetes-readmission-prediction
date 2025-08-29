@@ -5,8 +5,6 @@ FROM python:3.11-slim
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONPATH=/app
-ENV PORT=8000
-ENV HOST=0.0.0.0
 
 # Set working directory
 WORKDIR /app
@@ -46,12 +44,11 @@ RUN useradd --create-home --shell /bin/bash app && \
     chown -R app:app /app
 USER app
 
-# Expose port
+# Expose port (Railway will set the actual port)
 EXPOSE 8000
 
-# Health check - start with root endpoint, then check health endpoint
-HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=5 \
-    CMD curl -f http://localhost:8000/ || curl -f http://localhost:8000/health || exit 1
+# CRITICAL FIX: Remove internal health check - let Railway handle it externally
+# The internal health check was conflicting with Railway's external health check
 
 # Run the application
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}", "--workers", "1"]
