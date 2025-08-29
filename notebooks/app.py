@@ -50,6 +50,61 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+
+# Add startup event handler
+@app.on_event("startup")
+async def startup_event():
+    """Handle startup events and model loading"""
+    global startup_time, models, feature_names, feature_scaler
+
+    startup_time = datetime.now()
+    logger.info("🚀 FastAPI application starting up...")
+
+    try:
+        # Load models and features
+        logger.info("📦 Loading ML models and features...")
+
+        # Load feature scaler
+        if os.path.exists("feature_scaler.pkl"):
+            feature_scaler = joblib.load("feature_scaler.pkl")
+            logger.info("✅ Feature scaler loaded successfully")
+        else:
+            logger.warning("⚠️ Feature scaler not found")
+
+        # Load feature names
+        if os.path.exists("feature_names.pkl"):
+            feature_names = joblib.load("feature_names.pkl")
+            logger.info(f"✅ Feature names loaded: {len(feature_names)} features")
+        else:
+            logger.warning("⚠️ Feature names not found")
+
+        # Load models
+        model_files = {
+            "logistic_regression": "models/logistic_regression.pkl",
+            "xgboost": "models/xgboost.pkl",
+            "lightgbm": "models/lightgbm.pkl",
+            "catboost": "models/catboost.pkl",
+        }
+
+        for model_name, model_path in model_files.items():
+            try:
+                if os.path.exists(model_path):
+                    models[model_name] = joblib.load(model_path)
+                    logger.info(f"✅ {model_name} model loaded successfully")
+                else:
+                    logger.warning(f"⚠️ {model_name} model not found at {model_path}")
+            except Exception as e:
+                logger.error(f"❌ Failed to load {model_name} model: {e}")
+
+        logger.info(
+            f"🎯 Startup completed. Models loaded: {len([m for m in models.values() if m is not None])}"
+        )
+
+    except Exception as e:
+        logger.error(f"❌ Startup failed: {e}")
+        raise e
+
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -208,22 +263,6 @@ def load_models():
     except Exception as e:
         logger.error(f"❌ Critical error loading models: {str(e)}")
         raise
-
-
-# Load models on startup
-@app.on_event("startup")
-async def startup_event():
-    global models, feature_names, feature_scaler, model_metadata, startup_time
-    startup_time = datetime.now()
-
-    logger.info("🚀 Starting Diabetic Readmission ML Pipeline API...")
-
-    try:
-        load_models()
-
-    except Exception as e:
-        logger.error(f"❌ Startup failed: {e}")
-        raise e
 
 
 # Health check endpoint
@@ -516,6 +555,33 @@ async def simple_health_check():
         "service": "Diabetes Readmission API",
         "version": "2.0.0",
     }
+
+
+# Readiness check for Railway
+@app.get("/ready")
+async def readiness_check():
+    """Readiness check endpoint for Railway deployment"""
+    try:
+        # Check if basic components are loaded
+        basic_ready = (
+            feature_scaler is not None and len(feature_names) > 0 and len(models) > 0
+        )
+
+        return {
+            "ready": basic_ready,
+            "timestamp": datetime.now().isoformat(),
+            "components": {
+                "feature_scaler": feature_scaler is not None,
+                "feature_names": len(feature_names) > 0,
+                "models": len(models) > 0,
+            },
+        }
+    except Exception as e:
+        return {
+            "ready": False,
+            "error": str(e),
+            "timestamp": datetime.now().isoformat(),
+        }
 
 
 # Error handler
