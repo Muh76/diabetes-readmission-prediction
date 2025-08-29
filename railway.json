@@ -1,4 +1,4 @@
-ak{
+{
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "DOCKERFILE",
