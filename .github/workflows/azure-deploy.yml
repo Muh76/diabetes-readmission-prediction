@@ -53,16 +53,18 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Login to Azure Container Registry
+        run: |
+          az acr login --name diabetesmlacr
+
       - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v1
         with:
           appSourcePath: ${{ github.workspace }}
-          acrName: ${{ secrets.ACR_LOGIN_SERVER }}
-          acrUsername: ${{ secrets.ACR_USERNAME }}
-          acrPassword: ${{ secrets.ACR_PASSWORD }}
+          acrName: diabetesmlacr
           containerAppName: diabetes-readmission-api
           resourceGroup: ${{ secrets.RESOURCE_GROUP }}
-          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/diabetes-readmission:latest
+          imageToDeploy: diabetesmlacr.azurecr.io/diabetes-readmission:latest
 
   security-scan:
     runs-on: ubuntu-latest
