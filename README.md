@@ -80,7 +80,7 @@ curl http://localhost:8000/health
 
 ## 📊 **Dashboard & Visualization Showcase**
 
-> **📸 Dashboard Images**: The dashboard images below are referenced from `assets/dashboards/`. Save your dashboard screenshots with the exact filenames shown to display them here!
+> **📸 Dashboard Images**: All dashboard images below are now properly displayed directly in this README from `assets/dashboards/`. No more broken links!
 
 ### **🏥 Clinical & Medical Insights Dashboards**
 
@@ -210,8 +210,9 @@ curl http://localhost:8000/health
 - **Feature Contributions**: SHAP values showing individual feature impact on predictions
 - **Cumulative Impact**: How feature contributions accumulate to final prediction
 
-### **💻 Interactive Dashboards**
-The project includes **10 comprehensive HTML dashboards** with real-time insights. **To view them properly, use the dashboard server:**
+### **💻 Interactive Dashboard Access**
+
+**All dashboards are also available as interactive HTML files with Plotly visualizations.** To view them interactively:
 
 ```bash
 # Start the dashboard server
@@ -223,7 +224,7 @@ python scripts/serve_dashboards.py
 # - Allow proper viewing of all interactive dashboards
 ```
 
-**Available Dashboards:**
+**Available Interactive Dashboards:**
 1. **Executive Summary Dashboard** - High-level overview and key insights
 2. **ROI Validation Dashboard** - Financial impact analysis and ROI projections
 3. **Risk Mitigation Dashboard** - Risk management strategies and outcomes
@@ -231,55 +232,20 @@ python scripts/serve_dashboards.py
 5. **Clinical Outcomes Dashboard** - Medical insights and patient outcomes
 6. **Technical Documentation Dashboard** - System architecture and technical details
 7. **Cost Benefit Analysis** - Cost-benefit analysis and projections
-8. **Final ROI Validation** - Comprehensive ROI validation results
-9. **Improved Risk Mitigation** - Enhanced risk mitigation strategies
-10. **Technical Documentation** - Complete technical documentation
+8. **Clinical Insights Dashboard** - Clinical risk analysis and patient demographics
+9. **Business Cases Dashboard** - Market analysis and revenue projections
+10. **Technical Implementation Dashboard** - Troubleshooting and optimization metrics
+11. **Model Performance Dashboard** - ML algorithm comparison and metrics
+12. **SHAP Analysis Dashboard** - Feature importance and model interpretability
+13. **Data Distribution Dashboard** - Clinical severity and demographic analysis
+14. **Hypothesis Testing Dashboard** - Statistical validation and A/B testing
+15. **LIME Analysis Dashboard** - Individual prediction explanations
 
-*All dashboards are interactive HTML files with Plotly visualizations that require a web server to display properly*
-
-**📊 Dashboard Access**: All dashboards are available as interactive HTML files with Plotly visualizations. Use the dashboard server to view them properly:
-
-```bash
-# Run the dashboard server
-python scripts/serve_dashboards.py
-
-# This will:
-# - Start a local server on http://localhost:8080
-# - Open a navigation hub in your browser
-# - Allow proper viewing of all interactive dashboards
-```
-
-## 🎨 **Dashboard Gallery Preview**
-
-Your project includes **10 comprehensive interactive dashboards** that provide:
-
-### **🏥 Clinical & Medical Insights**
-- **Executive Summary**: Model performance (ROC-AUC: 95.3%, Accuracy: 93.1%)
-- **Clinical Outcomes**: Patient risk distribution, feature importance, compliance metrics
-- **Clinical Insights**: Readmission rates by severity, age groups, and risk categories
-
-### **💰 Business & Financial Analysis**
-- **ROI Validation**: 120-400% ROI scenarios with industry benchmarking
-- **Business Metrics**: Cost-benefit analysis, break-even timeline, investment returns
-- **Cost-Benefit**: $30.9M monthly savings, $1.625K ROI per patient
-- **Business Cases**: $3.2B market opportunity, 5-year revenue projection to $120M
-
-### **⚠️ Risk Management & Technical**
-- **Risk Mitigation**: Risk assessment matrix, cost analysis, timeline impact
-- **Technical Documentation**: API status, deployment requirements, performance metrics
-- **Technical Implementation**: Troubleshooting solutions, optimization metrics
-
-### **📊 Advanced Analytics**
-- **Model Performance**: Comprehensive comparison across 7 ML algorithms
-- **SHAP Analysis**: Feature importance, dependence plots, interaction analysis
-- **Data Distribution**: Clinical severity, medication complexity, socioeconomic factors
-- **Hypothesis Testing**: Statistical significance, A/B testing, business impact metrics
-
-**All dashboards feature interactive Plotly visualizations with real-time insights!**
+*All dashboards feature interactive Plotly visualizations with real-time insights and drill-down capabilities*
 
 ---
 
-## 🏗️ How It Works
+## ��️ How It Works
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
