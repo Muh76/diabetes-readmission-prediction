@@ -27,8 +27,27 @@ permissions:
   actions: read
   pull-requests: read
 
+# Only run Azure deployment on specific commits
 jobs:
+  check-azure-deployment:
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.check.outputs.should-deploy }}
+    steps:
+      - name: Check if Azure deployment is needed
+        id: check
+        run: |
+          if [[ "${{ github.event.head_commit.message }}" == *"Azure"* ]] || [[ "${{ github.event.head_commit.message }}" == *"azure"* ]] || [[ "${{ github.event.head_commit.message }}" == *"🚀 Deploy"* ]]; then
+            echo "should-deploy=true" >> $GITHUB_OUTPUT
+            echo "✅ Azure deployment triggered by commit message"
+          else
+            echo "should-deploy=false" >> $GITHUB_OUTPUT
+            echo "⏭️ Skipping Azure deployment - commit message doesn't mention Azure"
+          fi
+
   build-and-push:
+    needs: check-azure-deployment
+    if: needs.check-azure-deployment.outputs.should-deploy == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -56,7 +75,8 @@ jobs:
           # cache-to: type=gha,mode=max
 
   deploy-to-azure:
-    needs: build-and-push
+    needs: [check-azure-deployment, build-and-push]
+    if: needs.check-azure-deployment.outputs.should-deploy == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
