@@ -24,6 +24,12 @@ jobs:
         run: |
           echo "ACR Login Server: ${{ secrets.ACR_LOGIN_SERVER }}"
 
+      - name: Test Network Connectivity
+        run: |
+          echo "Testing network connectivity to ACR..."
+          nslookup ${{ secrets.ACR_LOGIN_SERVER }}
+          curl -I https://${{ secrets.ACR_LOGIN_SERVER }}/v2/ || echo "Curl failed - expected without credentials"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
