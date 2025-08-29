@@ -285,7 +285,7 @@ docker-compose up -d
 - **Model Interpretability**: Understanding complex feature interactions
 
 #### **Low Risk Patient SHAP Analysis Dashboard**
-![Low Risk Patient SHAP Analysis](assets/dashboards/lowRisk_patient_SHAP analysis.png)
+![Low Risk Patient SHAP Analysis](assets/dashboards/lowRisk_patient_SHAP_analysis.png)
 *SHAP analysis focused on low-risk patient characteristics*
 - **Low Risk Patterns**: Features that indicate low readmission risk
 - **SHAP Explanations**: Why patients are classified as low risk
