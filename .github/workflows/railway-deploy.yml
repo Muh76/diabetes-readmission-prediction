@@ -1,0 +1,47 @@
+name: Railway Deploy
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+# Railway deployment workflow
+jobs:
+  deploy-to-railway:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Railway
+        run: |
+          # Install Railway CLI
+          npm install -g @railway/cli
+          
+          # Deploy using Railway CLI
+          railway login --token ${{ secrets.RAILWAY_TOKEN }}
+          railway up --service ${{ secrets.RAILWAY_SERVICE }} --environment production
+
+  # Railway-specific testing
+  test-railway:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Railway dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-railway.txt
+
+      - name: Test Railway build
+        run: |
+          echo "Testing Railway-specific requirements..."
+          python -c "import fastapi, uvicorn, streamlit, plotly"
+          echo "✅ Railway dependencies verified"
