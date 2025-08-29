@@ -185,7 +185,7 @@ docker-compose up -d
 ### **🏥 Clinical & Medical Insights Dashboards**
 
 #### **Executive Summary Dashboard**
-![Executive Summary Dashboard](assets/dashboards/executive_summary.png)
+![Executive Summary Dashboard](assets/dashboards/Executive_summary_dash.png)
 *High-level overview with model performance, financial impact, patient risk distribution, and project timeline*
 - **Model Performance**: ROC-AUC: 95.3%, Accuracy: 93.1%, Precision: 99.5%, Recall: 86.7%
 - **Financial Impact**: Cost Savings: $58.8M, Quality Bonus: $1.2M, Penalty Avoidance: $1.8M
@@ -193,33 +193,33 @@ docker-compose up -d
 - **Project Timeline**: Phase 1 Complete, Phase 2 Planning
 
 #### **Clinical Outcomes Dashboard**
-![Clinical Outcomes Dashboard](assets/dashboards/clinical_outcomes.png)
+![Clinical Outcomes Dashboard](assets/dashboards/Clinical_Outcome_dash.png)
 *Comprehensive clinical metrics and patient outcome analysis*
 - **Readmission Rates**: 30-day: 11.3%, 90-day: 26.7%
 - **Risk Stratification**: High/Medium/Low risk patient distribution
 - **Clinical Factors**: Primary diagnosis impact, medication adherence
 - **Quality Metrics**: HEDIS compliance, CMS quality measures
 
-#### **Clinical Insights Dashboard**
-![Clinical Insights Dashboard](assets/dashboards/clinical_insights.png)
-*Deep clinical analysis and evidence-based insights*
-- **Diagnosis Patterns**: Most common readmission diagnoses
-- **Medication Analysis**: Adherence patterns and effectiveness
-- **Comorbidity Impact**: Multiple condition interactions
-- **Treatment Pathways**: Optimal intervention strategies
+#### **Implementation & Stakeholder Details Dashboard**
+![Implementation & Stakeholder Details](assets/dashboards/Implementation_stakeholders_details.png)
+*Implementation timeline, investment requirements, and stakeholder engagement*
+- **Project Timeline**: Implementation phases and milestones
+- **Investment Requirements**: Budget allocation and resource planning
+- **Stakeholder Engagement**: Key partners and collaboration strategies
+- **Success Metrics**: KPIs and measurement framework
 
 ### **💰 Business & Financial Dashboards**
 
 #### **ROI Validation Dashboard**
-![ROI Validation Dashboard](assets/dashboards/roi_validation.png)
+![ROI Validation Dashboard](assets/dashboards/ROI_validation_max_credibality.png)
 *Comprehensive return on investment analysis and validation*
 - **Cost-Benefit Analysis**: Implementation costs vs. savings
 - **ROI Projections**: 300-500% return on investment
 - **Break-even Analysis**: Timeline to positive returns
 - **Stakeholder Value**: Executive summary for decision makers
 
-#### **Risk Mitigation Dashboard**
-![Risk Mitigation Dashboard](assets/dashboards/risk_mitigation.png)
+#### **Risk Mitigation Strategy Dashboard**
+![Risk Mitigation Strategy](assets/dashboards/risk_mitigation_strategy.png)
 *Risk assessment and mitigation strategies*
 - **Risk Categories**: Clinical, operational, financial risks
 - **Mitigation Strategies**: Preventive measures and interventions
@@ -227,7 +227,7 @@ docker-compose up -d
 - **Monitoring Protocols**: Continuous risk surveillance
 
 #### **Business Metrics Dashboard**
-![Business Metrics Dashboard](assets/dashboards/business_metrics.png)
+![Business Metrics Dashboard](assets/dashboards/Business_metrics-dash.png)
 *Key performance indicators and business metrics*
 - **Financial KPIs**: Cost per readmission, savings per patient
 - **Operational Metrics**: Patient volume, efficiency gains
@@ -242,58 +242,58 @@ docker-compose up -d
 - **Time Horizon**: Short-term and long-term projections
 - **Sensitivity Analysis**: Best/worst case scenarios
 
-#### **Business Cases Dashboard**
-![Business Cases Dashboard](assets/dashboards/business_cases.png)
-*Real-world business case studies and applications*
-- **Use Case Scenarios**: Different hospital settings and sizes
-- **Success Stories**: Implementation examples and results
-- **Best Practices**: Lessons learned and recommendations
-- **Scalability**: Expansion to other healthcare systems
+#### **Business Value & Cost-Benefit Financial Projection Dashboard**
+![Business Value & Cost-Benefit Financial Projection](assets/dashboards/business_val_costBenefit_financialProjection.png)
+*Comprehensive financial projections and business value analysis*
+- **Financial Projections**: Multi-year cost and benefit forecasts
+- **Business Value**: Strategic impact and competitive advantages
+- **Cost-Benefit Scenarios**: Different implementation approaches
+- **ROI Analysis**: Return on investment across time horizons
+
+#### **Market Opportunity & Strategy Dashboard**
+![Market Opportunity & Strategy](assets/dashboards/market_opportunity_stretagey.png)
+*Market analysis and strategic positioning*
+- **Market Size**: Total addressable market and growth potential
+- **Competitive Landscape**: Market positioning and differentiation
+- **Strategic Opportunities**: Growth strategies and expansion plans
+- **Market Penetration**: Go-to-market strategies and execution
 
 ### **🔬 Technical & Analytical Dashboards**
 
-#### **Technical Documentation Dashboard**
-![Technical Documentation Dashboard](assets/dashboards/technical_documentation.png)
-*Comprehensive technical documentation and architecture*
-- **System Architecture**: Component diagrams and data flow
-- **API Documentation**: Endpoint specifications and examples
+#### **API & Deployment Documentation Dashboard**
+![API & Deployment Documentation](assets/dashboards/APIdeployment_documentation.png)
+*Comprehensive API documentation and deployment information*
+- **API Endpoints**: Complete endpoint specifications and examples
 - **Deployment Guide**: Step-by-step implementation instructions
+- **Integration Examples**: Code samples and use cases
 - **Troubleshooting**: Common issues and solutions
 
-#### **Technical Implementation Dashboard**
-![Technical Implementation Dashboard](assets/dashboards/technical_implementation.png)
+#### **Technical Implementation Details Dashboard**
+![Technical Implementation Details](assets/dashboards/Technical_implamentation_details.png)
 *Implementation details and technical specifications*
 - **Code Structure**: Repository organization and modules
 - **Dependencies**: Required packages and versions
 - **Configuration**: Environment setup and parameters
 - **Testing**: Unit tests and integration testing
 
-#### **Model Performance Dashboard**
-![Model Performance Dashboard](assets/dashboards/model_performance.png)
-*Detailed model performance analysis and comparison*
-- **Performance Metrics**: Accuracy, precision, recall, F1-score
-- **Model Comparison**: LightGBM vs. XGBoost vs. CatBoost
-- **Cross-validation**: Robust performance assessment
-- **Hyperparameter Tuning**: Optimization results and impact
+#### **SHAP Interaction Analysis Dashboard**
+![SHAP Interaction Analysis](assets/dashboards/SHAP_Interaction_num_medication_vs_all_features.png)
+*SHAP interaction analysis for medication features and clinical variables*
+- **Feature Interactions**: How medication features interact with other variables
+- **SHAP Values**: Detailed feature importance analysis
+- **Clinical Correlations**: Medical relationships between features
+- **Model Interpretability**: Understanding complex feature interactions
 
-#### **SHAP Analysis Dashboard**
-![SHAP Analysis Dashboard](assets/dashboards/shap_analysis.png)
-*SHAP (SHapley Additive exPlanations) analysis for model interpretability*
-- **Feature Importance**: SHAP values and rankings
-- **Individual Predictions**: Patient-specific explanations
-- **Global Patterns**: Overall feature impact analysis
-- **Clinical Interpretability**: Medical relevance of features
-
-#### **Data Distribution Dashboard**
-![Data Distribution Dashboard](assets/dashboards/data_distribution.png)
-*Comprehensive data analysis and distribution patterns*
-- **Demographic Distribution**: Age, gender, race patterns
-- **Clinical Variables**: Diagnosis, medication distributions
-- **Temporal Patterns**: Seasonal and time-based trends
-- **Data Quality**: Missing values and data completeness
+#### **Low Risk Patient SHAP Analysis Dashboard**
+![Low Risk Patient SHAP Analysis](assets/dashboards/lowRisk_patient_SHAP analysis.png)
+*SHAP analysis focused on low-risk patient characteristics*
+- **Low Risk Patterns**: Features that indicate low readmission risk
+- **SHAP Explanations**: Why patients are classified as low risk
+- **Clinical Insights**: Medical factors contributing to low risk
+- **Prevention Strategies**: How to maintain low risk status
 
 #### **Hypothesis Testing Dashboard**
-![Hypothesis Testing Dashboard](assets/dashboards/hypothesis_testing.png)
+![Hypothesis Testing Dashboard](assets/dashboards/hypo_test.png)
 *Statistical hypothesis testing and validation*
 - **Statistical Tests**: T-tests, chi-square, correlation analysis
 - **P-values**: Significance testing results
