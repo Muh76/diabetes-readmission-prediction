@@ -36,8 +36,8 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.ACR_LOGIN_SERVER }}/diabetes-readmission:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # cache-from: type=gha
+          # cache-to: type=gha,mode=max
 
   deploy-to-azure:
     needs: build-and-push
