@@ -68,6 +68,8 @@ jobs:
           containerAppEnvironment: diabetes-ml-env
           resourceGroup: ${{ secrets.RESOURCE_GROUP }}
           imageToDeploy: diabetesmlacr.azurecr.io/diabetes-readmission:latest
+          targetPort: 8000
+          ingress: external
 
   security-scan:
     runs-on: ubuntu-latest
