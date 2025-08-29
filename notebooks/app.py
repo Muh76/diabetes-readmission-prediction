@@ -70,32 +70,50 @@ startup_time = None
 # Pydantic models for input validation
 class PatientData(BaseModel):
     """Patient data input model with validation - matches all engineered features (16 total)"""
-    
+
     # Core patient identifiers
     encounter_id: int = Field(..., description="Unique encounter identifier")
     patient_nbr: int = Field(..., description="Unique patient number")
-    
+
     # Admission and discharge information
     admission_type_id: int = Field(..., ge=1, le=9, description="Type of admission")
-    discharge_disposition_id: int = Field(..., ge=1, le=30, description="Discharge disposition")
-    admission_source_id: int = Field(..., ge=1, le=25, description="Source of admission")
-    
+    discharge_disposition_id: int = Field(
+        ..., ge=1, le=30, description="Discharge disposition"
+    )
+    admission_source_id: int = Field(
+        ..., ge=1, le=25, description="Source of admission"
+    )
+
     # Hospital stay metrics
-    time_in_hospital: int = Field(..., ge=1, le=365, description="Time in hospital (days)")
-    num_lab_procedures: int = Field(..., ge=0, le=1000, description="Number of lab procedures")
+    time_in_hospital: int = Field(
+        ..., ge=1, le=365, description="Time in hospital (days)"
+    )
+    num_lab_procedures: int = Field(
+        ..., ge=0, le=1000, description="Number of lab procedures"
+    )
     num_procedures: int = Field(..., ge=0, le=100, description="Number of procedures")
     num_medications: int = Field(..., ge=0, le=100, description="Number of medications")
-    
+
     # Visit history
-    number_outpatient: int = Field(..., ge=0, le=100, description="Number of outpatient visits")
-    number_emergency: int = Field(..., ge=0, le=100, description="Number of emergency visits")
-    number_inpatient: int = Field(..., ge=0, le=100, description="Number of inpatient visits")
+    number_outpatient: int = Field(
+        ..., ge=0, le=100, description="Number of outpatient visits"
+    )
+    number_emergency: int = Field(
+        ..., ge=0, le=100, description="Number of emergency visits"
+    )
+    number_inpatient: int = Field(
+        ..., ge=0, le=100, description="Number of inpatient visits"
+    )
     number_diagnoses: int = Field(..., ge=1, le=50, description="Number of diagnoses")
-    
+
     # Engineered features
     age_midpoint: int = Field(..., ge=0, le=100, description="Age group midpoint")
-    service_utilization_score: int = Field(..., ge=0, le=10, description="Service utilization score")
-    clinical_risk_score: int = Field(..., ge=0, le=10, description="Clinical risk score")
+    service_utilization_score: int = Field(
+        ..., ge=0, le=10, description="Service utilization score"
+    )
+    clinical_risk_score: int = Field(
+        ..., ge=0, le=10, description="Clinical risk score"
+    )
 
     @validator("*")
     def validate_positive(cls, v):  # noqa: N805
@@ -244,14 +262,14 @@ async def get_feature_names():
     try:
         if not feature_names:
             raise HTTPException(
-                status_code=500, 
-                detail="Feature names not loaded. Please check if models are properly initialized."
+                status_code=500,
+                detail="Feature names not loaded. Please check if models are properly initialized.",
             )
-        
+
         return {
             "feature_count": len(feature_names),
             "features": feature_names,
-            "description": "List of engineered features expected by the ML model"
+            "description": "List of engineered features expected by the ML model",
         }
     except Exception as e:
         logger.error(f"Failed to get feature names: {e}")
@@ -331,7 +349,7 @@ async def predict_readmission(
         # Prepare input data - ensure correct feature order
         patient_dict = patient.dict()
         input_data = pd.DataFrame([patient_dict])
-        
+
         # Ensure features are in the correct order as expected by the model
         if feature_names:
             # Check if we have all required features
@@ -339,13 +357,13 @@ async def predict_readmission(
             if missing_features:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Missing required features: {missing_features}"
+                    detail=f"Missing required features: {missing_features}",
                 )
-            
+
             # Select only the features that the model expects
             input_data = input_data[feature_names]
             logger.info(f"✅ Selected {len(input_data.columns)} features for prediction")
-        
+
         # Validate feature count
         if len(input_data.columns) != len(feature_names):
             logger.warning(
@@ -353,7 +371,7 @@ async def predict_readmission(
             )
             raise HTTPException(
                 status_code=400,
-                detail=f"Feature count mismatch: expected {len(feature_names)}, got {len(input_data.columns)}"
+                detail=f"Feature count mismatch: expected {len(feature_names)}, got {len(input_data.columns)}",
             )
 
         # Scale features if scaler is available
