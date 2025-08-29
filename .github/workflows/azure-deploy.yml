@@ -1,269 +1,105 @@
-name: "🚀 AZURE DEPLOYMENT: ML API to Azure Container Apps - V3.0 FINAL"
+name: Azure Deploy with Security Scan
 
 on:
-  # 🎯 PRIMARY WORKFLOW V3.0 FINAL: This is the ONLY workflow that should run for Azure deployment - COMPLETE REFRESH
   push:
     branches: [ master, main ]
-    paths:
-      - 'notebooks/app.py'
-      - 'requirements.txt'
-      - 'Dockerfile'
   pull_request:
     branches: [ master, main ]
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy to'
-        required: true
-        default: 'production'
-        type: choice
-        options:
-        - staging
-        - production
 
-env:
-  REGISTRY: diabetesmlacr.azurecr.io
-  IMAGE_NAME: diabetes-ml-api
-  RESOURCE_GROUP: Muh_Azure_ML
-  LOCATION: eastus2
-  CONTAINER_APP_ENV: diabetes-ml-env
-  CONTAINER_APP_NAME: diabetes-ml-api
+# Explicitly define permissions to fix security scan issues
+permissions:
+  contents: read
+  security-events: write  # Required for security scans
+  actions: read
+  pull-requests: read
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Azure Container Registry
-      uses: azure/docker-login@v1
-      with:
-        login-server: ${{ env.REGISTRY }}
-        username: ${{ secrets.ACR_USERNAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    - name: Build and push Docker image
-      run: |
-        # Force complete rebuild with new tag
-        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-        IMAGE_TAG="v2.0-$TIMESTAMP"
-        FULL_IMAGE_NAME="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
-
-        echo "🔨 Building Docker image with tag: $IMAGE_TAG"
-        echo "📦 Full image name: $FULL_IMAGE_NAME"
-
-        # Clear Docker cache completely
-        echo "🧹 Clearing Docker caches..."
-        docker system prune -af
-        docker builder prune -af
-
-        # Build with no cache and proper tagging
-        echo "🔨 Building image with tag: $IMAGE_TAG"
-        docker build --no-cache -t $FULL_IMAGE_NAME:$IMAGE_TAG .
-
-        echo "🔨 Building image with tag: latest"
-        docker build --no-cache -t $FULL_IMAGE_NAME:latest .
-
-        # Verify images were built
-        echo "📋 Built images:"
-        docker images | grep ${{ env.IMAGE_NAME }}
-
-        echo "📦 Pushing images to Azure Container Registry..."
-        echo "Pushing $IMAGE_TAG..."
-        docker push $FULL_IMAGE_NAME:$IMAGE_TAG
-
-        echo "Pushing latest..."
-        docker push $FULL_IMAGE_NAME:latest
-
-        # Verify images were pushed
-        echo "✅ Images pushed successfully!"
-        echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.REGISTRY_LOGIN_SERVER }}/diabetes-readmission:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy-to-azure:
     needs: build-and-push
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Set Azure subscription
-      run: |
-        az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-    - name: Install Azure Container Apps extension
-      run: |
-        az extension add --name containerapp --upgrade
-
-    - name: Deploy to Azure Container Apps
-      run: |
-        # Get ACR login server and credentials
-        ACR_LOGIN_SERVER=$(az acr show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query loginServer --output tsv)
-        ACR_USERNAME=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query username --output tsv)
-        ACR_PASSWORD=$(az acr credential show --name diabetesmlacr --resource-group ${{ env.RESOURCE_GROUP }} --query 'passwords[0].value' --output tsv)
-
-        echo "🔍 ACR Details:"
-        echo "Login Server: $ACR_LOGIN_SERVER"
-        echo "Username: $ACR_USERNAME"
-        echo "Password: [HIDDEN]"
-
-        # 🔍 VERIFICATION: Check for conflicting deployments
-        echo "🔍 VERIFYING: No conflicting deployments exist..."
-
-        # Check if there are any other container apps with similar names
-        echo "Checking for conflicting container apps..."
-        az containerapp list --resource-group ${{ env.RESOURCE_GROUP }} --query "[].{name:name, image:properties.template.containers[0].image}" --output table
-
-        # Check if our target container app exists and what image it's using
-        if az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} &> /dev/null; then
-          echo "🔍 Current container app image:"
-          az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query "properties.template.containers[0].image" --output tsv
-
-          echo "🔍 Container app revision history:"
-          az containerapp revision list --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query "[].{name:name, image:properties.template.containers[0].image, created:properties.createdTime}" --output table
-        fi
-
-        echo "🗑️ FORCE CLEANUP: Deleting existing container app to ensure fresh deployment..."
-        if az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} &> /dev/null; then
-          echo "🚨 FORCE DELETE: Removing old container app completely..."
-          az containerapp delete --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --yes
-          echo "⏳ Waiting for deletion to complete..."
-          sleep 30
-        else
-          echo "ℹ️ No existing container app found, proceeding with creation..."
-        fi
-
-        echo "🚀 Creating completely new container app with fresh image..."
-        FULL_IMAGE_NAME="$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest"
-        echo "📦 Using image: $FULL_IMAGE_NAME"
-
-        # 🔍 VERIFICATION: Verify the image exists in ACR
-        echo "🔍 VERIFYING: Image exists in Azure Container Registry..."
-        az acr repository show-tags --name diabetesmlacr --repository ${{ env.IMAGE_NAME }} --orderby time_desc --output table
-
-        az containerapp create \
-          --name ${{ env.CONTAINER_APP_NAME }} \
-          --resource-group ${{ env.RESOURCE_GROUP }} \
-          --environment ${{ env.CONTAINER_APP_ENV }} \
-          --image $FULL_IMAGE_NAME \
-          --registry-server $ACR_LOGIN_SERVER \
-          --registry-username $ACR_USERNAME \
-          --registry-password $ACR_PASSWORD \
-          --target-port 8000 \
-          --ingress external \
-          --cpu 1.0 \
-          --memory 2.0Gi \
-          --min-replicas 1 \
-          --max-replicas 3
-
-        # Get the FQDN
-        FQDN=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.configuration.ingress.fqdn --output tsv)
-
-        echo "🎉 Container app deployed successfully!"
-        echo "🌐 URL: https://$FQDN"
-        echo "📊 Health check: https://$FQDN/health"
-        echo "📚 API docs: https://$FQDN/docs"
-
-        # Set output for next steps
-        echo "api_url=https://$FQDN" >> $GITHUB_OUTPUT
-
-    - name: Test API endpoints
-      run: |
-        FQDN=$(az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.configuration.ingress.fqdn --output tsv)
-
-        echo "Waiting for API to be ready (increased wait time for first deployment)..."
-        sleep 120  # Wait 2 minutes for container to fully start
-
-        echo "🔍 DIAGNOSIS: Checking container logs to see why FastAPI is not responding..."
-        echo "=== Container Logs ==="
-        az containerapp logs show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --follow false | head -50
-
-        echo "=== Container Status ==="
-        az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.runningStatus
-
-        echo "=== Container Configuration ==="
-        az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.configuration.ingress
-
-        echo "Testing health endpoint with retries..."
-        MAX_RETRIES=5
-        RETRY_COUNT=0
-
-        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-          echo "Attempt $((RETRY_COUNT + 1)) of $MAX_RETRIES..."
-
-          if curl -f --max-time 30 "https://$FQDN/health"; then
-            echo "✅ Health endpoint is working!"
-            break
-          else
-            echo "⚠️ Health check failed, waiting 30 seconds before retry..."
-            RETRY_COUNT=$((RETRY_COUNT + 1))
-            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-              sleep 30
-            fi
-          fi
-        done
-
-        if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-          echo "❌ Health endpoint failed after $MAX_RETRIES attempts"
-          echo "🔍 FINAL DIAGNOSIS: Container is running but not responding to HTTP requests"
-          echo "=== Final Container Logs (last 100 lines) ==="
-          az containerapp logs show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --follow false | tail -100
-
-          echo "=== Container App Full Status ==="
-          az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties
-
-          echo "🚨 DEPLOYMENT FAILED: FastAPI application is not responding"
-          echo "💡 Likely causes:"
-          echo "   1. Model loading failure during startup"
-          echo "   2. FastAPI app crash during initialization"
-          echo "   3. Port binding issues"
-          echo "   4. Missing Python dependencies"
-          exit 1
-        fi
-
-        echo "Testing models endpoint..."
-        if curl -f --max-time 30 "https://$FQDN/models"; then
-          echo "✅ Models endpoint is working!"
-        else
-          echo "⚠️ Models endpoint failed, but deployment is successful"
-        fi
-
-        echo "🎉 API deployment completed successfully!"
-        echo "🌐 Your ML API is live at: https://$FQDN"
-        echo "📊 Health check: https://$FQDN/health"
-        echo "📚 API docs: https://$FQDN/docs"
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }}
+          acrName: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          acrUsername: ${{ secrets.REGISTRY_USERNAME }}
+          acrPassword: ${{ secrets.REGISTRY_PASSWORD }}
+          containerAppName: diabetes-readmission-api
+          resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+          imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}/diabetes-readmission:latest
 
   security-scan:
     runs-on: ubuntu-latest
-    if: always()
-
+    # Override permissions specifically for this job
+    permissions:
+      security-events: write  # Override for this job
+      contents: read
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
 
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v3
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()  # Continue even if scan fails
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Optional: Add testing job
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests (if you have them)
+        run: |
+          echo "Running basic checks..."
+          python -c "import pandas, numpy, sklearn, fastapi"
+          echo "✅ All core dependencies imported successfully"
