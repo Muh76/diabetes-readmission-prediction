@@ -65,6 +65,7 @@ jobs:
           acrUsername: ${{ secrets.ACR_USERNAME }}
           acrPassword: ${{ secrets.ACR_PASSWORD }}
           containerAppName: diabetes-readmission-api
+          containerAppEnvironment: diabetes-ml-env
           resourceGroup: ${{ secrets.RESOURCE_GROUP }}
           imageToDeploy: diabetesmlacr.azurecr.io/diabetes-readmission:latest
 
