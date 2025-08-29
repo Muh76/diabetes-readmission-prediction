@@ -62,6 +62,8 @@ jobs:
         with:
           appSourcePath: ${{ github.workspace }}
           acrName: diabetesmlacr
+          acrUsername: ${{ secrets.ACR_USERNAME }}
+          acrPassword: ${{ secrets.ACR_PASSWORD }}
           containerAppName: diabetes-readmission-api
           resourceGroup: ${{ secrets.RESOURCE_GROUP }}
           imageToDeploy: diabetesmlacr.azurecr.io/diabetes-readmission:latest
