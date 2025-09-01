@@ -1,14 +1,15 @@
 {
   "version": 2,
-  "functions": {
-    "notebooks/app_improved.py": {
-      "maxDuration": 30
+  "builds": [
+    {
+      "src": "api/app.py",
+      "use": "@vercel/python"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "notebooks/app_improved.py"
+      "dest": "/api/app"
     }
   ]
 }
