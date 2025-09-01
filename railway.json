@@ -5,8 +5,8 @@
     "dockerfilePath": "Dockerfile.streamlit"
   },
   "deploy": {
-    "startCommand": "streamlit run streamlit_app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true",
-    "healthcheckPath": "/health",
+    "startCommand": "streamlit run streamlit_app.py --server.port $PORT --server.address 0.0.0.0",
+    "healthcheckPath": "/",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 5

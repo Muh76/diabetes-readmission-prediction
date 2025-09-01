@@ -34,9 +34,5 @@ USER app
 # Expose port (Railway will set the actual port)
 EXPOSE 8501
 
-# Health check for Railway
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8501}/ || exit 1
-
-# Run Streamlit with Railway port
-CMD ["streamlit", "run", "streamlit_app.py", "--server.port", "${PORT:-8501}", "--server.address", "0.0.0.0", "--server.headless", "true"]
+# Default command (will be overridden by railway.json startCommand)
+CMD ["streamlit", "run", "streamlit_app.py", "--server.port", "${PORT:-8501}", "--server.address", "0.0.0.0"]

@@ -1,44 +1,11 @@
-import os
-import threading
-import time
 import warnings
 
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-from flask import Flask, jsonify
 
 warnings.filterwarnings("ignore")
-
-# Create a simple Flask app for health checks
-app = Flask(__name__)
-
-
-@app.route("/health")
-def health_check():
-    return jsonify({"status": "healthy", "service": "streamlit-dashboard"})
-
-
-@app.route("/")
-def root():
-    return jsonify({"status": "running", "service": "streamlit-dashboard"})
-
-
-# Start Flask server in a separate thread for health checks
-def run_flask():
-    port = int(os.environ.get("PORT", 8501))
-    # Use a different port for Flask to avoid conflicts
-    flask_port = port + 1000 if port < 9000 else 8502
-    app.run(host="0.0.0.0", port=flask_port, debug=False)
-
-
-# Start Flask server
-flask_thread = threading.Thread(target=run_flask, daemon=True)
-flask_thread.start()
-
-# Give Flask a moment to start
-time.sleep(1)
 
 # Page configuration
 st.set_page_config(
