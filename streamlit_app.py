@@ -1,3 +1,7 @@
+# Streamlit Cloud Configuration
+# This app is optimized for deployment on Streamlit Cloud
+# Deploy at: https://share.streamlit.io
+
 import warnings
 
 import pandas as pd
