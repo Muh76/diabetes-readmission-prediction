@@ -1,15 +1,48 @@
-import json
+import os
+import threading
+import time
+import warnings
 
-import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import requests
 import streamlit as st
+from flask import Flask, jsonify
+
+warnings.filterwarnings("ignore")
+
+# Create a simple Flask app for health checks
+app = Flask(__name__)
+
+
+@app.route("/health")
+def health_check():
+    return jsonify({"status": "healthy", "service": "streamlit-dashboard"})
+
+
+@app.route("/")
+def root():
+    return jsonify({"status": "running", "service": "streamlit-dashboard"})
+
+
+# Start Flask server in a separate thread for health checks
+def run_flask():
+    port = int(os.environ.get("PORT", 8501))
+    # Use a different port for Flask to avoid conflicts
+    flask_port = port + 1000 if port < 9000 else 8502
+    app.run(host="0.0.0.0", port=flask_port, debug=False)
+
+
+# Start Flask server
+flask_thread = threading.Thread(target=run_flask, daemon=True)
+flask_thread.start()
+
+# Give Flask a moment to start
+time.sleep(1)
 
 # Page configuration
 st.set_page_config(
-    page_title="Diabetes Readmission Prediction Dashboard",
+    page_title="🏥 Diabetes Readmission Prediction Dashboard",
     page_icon="🏥",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -24,18 +57,13 @@ st.markdown(
         color: #1f77b4;
         text-align: center;
         margin-bottom: 2rem;
+        font-weight: bold;
     }
     .metric-card {
         background-color: #f0f2f6;
         padding: 1rem;
         border-radius: 0.5rem;
         border-left: 4px solid #1f77b4;
-    }
-    .prediction-form {
-        background-color: #ffffff;
-        padding: 2rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 </style>
 """,
@@ -49,412 +77,240 @@ st.markdown(
 )
 
 # Sidebar
-st.sidebar.title("Navigation")
+st.sidebar.title("🎛️ Dashboard Controls")
+st.sidebar.markdown("---")
+st.sidebar.warning("🚧 **DEMO MODE** - This is a demonstration dashboard")
+
+# Navigation
 page = st.sidebar.selectbox(
-    "Choose a page",
-    ["📊 Overview", "🔮 Prediction", "📈 Analytics", "🏗️ Model Info", "📱 API Status"],
+    "📱 Select Dashboard:",
+    ["🏠 Home", "📊 Model Performance", "🔍 Risk Analysis", "💰 Business Impact"],
 )
 
+# Home Page
+if page == "🏠 Home":
+    st.markdown("## 🎯 **Welcome to the Diabetes Readmission Prediction Dashboard**")
 
-# Sample data for demonstration
-@st.cache_data
-def load_sample_data():
-    """Load sample data for dashboard demonstration"""
-    np.random.seed(42)
-    n_samples = 1000
-
-    data = {
-        "age": np.random.normal(65, 15, n_samples).astype(int),
-        "gender": np.random.choice(["Male", "Female"], n_samples),
-        "time_in_hospital": np.random.poisson(5, n_samples),
-        "num_medications": np.random.poisson(8, n_samples),
-        "num_lab_procedures": np.random.poisson(25, n_samples),
-        "readmission_risk": np.random.beta(2, 8, n_samples),
-        "risk_category": np.random.choice(
-            ["Low", "Medium", "High"], n_samples, p=[0.6, 0.3, 0.1]
-        ),
-    }
-
-    return pd.DataFrame(data)
-
-
-# Load data
-df = load_sample_data()
-
-if page == "📊 Overview":
-    st.header("📊 Project Overview")
-
-    # Key metrics
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.metric("Model Performance", "95.3%", "ROC-AUC")
-
-    with col2:
-        st.metric("Accuracy", "93.1%", "Overall")
-
-    with col3:
-        st.metric("Cost Savings", "$58.8M", "Potential")
-
-    with col4:
-        st.metric("ROI", "300-500%", "Return")
-
-    # Project description
-    st.markdown(
-        """
-    ### 🎯 **Project Mission**
-    This comprehensive MLOps system predicts 30-day hospital readmissions in diabetic patients
-    with advanced machine learning models, providing actionable insights for healthcare providers.
-
-    ### 🚀 **Key Features**
-    - **Advanced ML Models**: LightGBM, XGBoost, CatBoost ensemble
-    - **Real-time API**: FastAPI-based prediction service
-    - **Interactive Dashboards**: Comprehensive analytics and insights
-    - **Production Ready**: Docker containerization and CI/CD pipeline
-    - **Healthcare Compliant**: HIPAA-aware data handling
-    """
-    )
-
-    # Performance comparison
-    st.subheader("📈 Model Performance Comparison")
-
-    models = ["Majority Class", "Logistic Regression", "Our Model"]
-    accuracy = [88.7, 89.2, 93.1]
-    roc_auc = [0.5, 0.78, 0.953]
-
-    fig = go.Figure()
-    fig.add_trace(
-        go.Bar(x=models, y=accuracy, name="Accuracy (%)", marker_color="lightblue")
-    )
-    fig.add_trace(
-        go.Bar(
-            x=models,
-            y=[x * 100 for x in roc_auc],
-            name="ROC-AUC (%)",
-            marker_color="orange",
-        )
-    )
-
-    fig.update_layout(
-        title="Model Performance Comparison",
-        xaxis_title="Models",
-        yaxis_title="Score (%)",
-        barmode="group",
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-elif page == "🔮 Prediction":
-    st.header("🔮 Readmission Risk Prediction")
-
-    st.markdown(
-        """
-    ### 📋 **Patient Information Form**
-    Enter patient details to predict readmission risk. The model uses features available at discharge time.
-    """
-    )
-
-    # Prediction form
-    with st.form("prediction_form"):
-        col1, col2 = st.columns(2)
-
-        with col1:
-            age = st.number_input("Age", min_value=18, max_value=120, value=65)
-            gender = st.selectbox("Gender", ["Male", "Female"])
-            time_in_hospital = st.number_input(
-                "Length of Stay (days)", min_value=1, max_value=365, value=5
-            )
-            num_medications = st.number_input(
-                "Number of Medications", min_value=0, max_value=50, value=8
-            )
-
-        with col2:
-            num_lab_procedures = st.number_input(
-                "Number of Lab Procedures", min_value=0, max_value=100, value=25
-            )
-            admission_type = st.selectbox("Admission Type", [1, 2, 3, 4, 5, 6, 7, 8])
-            discharge_disposition = st.selectbox(
-                "Discharge Disposition", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-            )
-            diabetes_med = st.selectbox("Diabetes Medication", ["No", "Yes"])
-
-        submitted = st.form_submit_button("🚀 Predict Readmission Risk")
-
-        if submitted:
-            # Simulate prediction (replace with actual API call)
-            st.success("✅ Prediction submitted successfully!")
-
-            # Simulate API response
-            risk_score = np.random.beta(2, 8)
-            risk_category = (
-                "Low" if risk_score < 0.3 else "Medium" if risk_score < 0.7 else "High"
-            )
-            confidence = np.random.uniform(0.8, 0.95)
-
-            # Display results
-            st.subheader("📊 Prediction Results")
-
-            col1, col2, col3 = st.columns(3)
-
-            with col1:
-                st.metric("Risk Score", f"{risk_score:.1%}")
-
-            with col2:
-                st.metric("Risk Category", risk_category)
-
-            with col3:
-                st.metric("Confidence", f"{confidence:.1%}")
-
-            # Risk visualization
-            fig = go.Figure(
-                go.Indicator(
-                    mode="gauge+number+delta",
-                    value=risk_score * 100,
-                    domain={"x": [0, 1], "y": [0, 1]},
-                    title={"text": "Readmission Risk"},
-                    delta={"reference": 50},
-                    gauge={
-                        "axis": {"range": [None, 100]},
-                        "bar": {"color": "darkblue"},
-                        "steps": [
-                            {"range": [0, 30], "color": "lightgreen"},
-                            {"range": [30, 70], "color": "yellow"},
-                            {"range": [70, 100], "color": "red"},
-                        ],
-                        "threshold": {
-                            "line": {"color": "red", "width": 4},
-                            "thickness": 0.75,
-                            "value": 70,
-                        },
-                    },
-                )
-            )
-
-            st.plotly_chart(fig, use_container_width=True)
-
-elif page == "📈 Analytics":
-    st.header("📈 Data Analytics & Insights")
-
-    # Data overview
-    st.subheader("📊 Dataset Overview")
     col1, col2 = st.columns(2)
 
     with col1:
-        st.metric("Total Patients", len(df))
-        st.metric("Average Age", f"{df['age'].mean():.1f} years")
+        st.markdown("### 📋 **What This Dashboard Shows**")
+        st.markdown(
+            """
+        - **Model Performance Metrics** - Accuracy, ROC-AUC, Precision, Recall
+        - **Risk Analysis** - Patient risk stratification and factors
+        - **Business Impact** - Cost savings and ROI projections
+        - **Clinical Insights** - Feature importance and correlations
+        """
+        )
 
     with col2:
-        st.metric("Male Patients", f"{len(df[df['gender']=='Male'])}")
-        st.metric("Female Patients", f"{len(df[df['gender']=='Female'])}")
-
-    # Age distribution
-    st.subheader("👥 Age Distribution by Gender")
-    fig = px.histogram(
-        df,
-        x="age",
-        color="gender",
-        nbins=20,
-        title="Patient Age Distribution",
-        labels={"age": "Age (years)", "count": "Number of Patients"},
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-    # Risk distribution
-    st.subheader("⚠️ Risk Category Distribution")
-    risk_counts = df["risk_category"].value_counts()
-    fig = px.pie(
-        values=risk_counts.values,
-        names=risk_counts.index,
-        title="Patient Risk Category Distribution",
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-    # Correlation analysis
-    st.subheader("🔗 Feature Correlation Analysis")
-    numeric_cols = [
-        "age",
-        "time_in_hospital",
-        "num_medications",
-        "num_lab_procedures",
-        "readmission_risk",
-    ]
-    correlation_matrix = df[numeric_cols].corr()
-
-    fig = px.imshow(
-        correlation_matrix,
-        title="Feature Correlation Matrix",
-        color_continuous_scale="RdBu",
-        aspect="auto",
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-elif page == "🏗️ Model Info":
-    st.header("🏗️ Model Architecture & Information")
-
-    st.markdown(
+        st.markdown("### 🚀 **Key Features**")
+        st.markdown(
+            """
+        - **Interactive Visualizations** - Plotly charts and graphs
+        - **Real-time Updates** - Dynamic data exploration
+        - **Risk Assessment** - Patient readmission probability
+        - **Business Intelligence** - Financial impact analysis
         """
-    ### 🤖 **Machine Learning Pipeline**
+        )
 
-    #### **1. Data Preprocessing**
-    - **Dataset**: 101,766 patient records from UCI Diabetes Dataset
-    - **Features**: 48 raw features → 150+ engineered features
-    - **Validation**: Pandera schema validation with healthcare-specific rules
+    st.markdown("---")
 
-    #### **2. Feature Engineering**
-    - **Clinical Risk Scores**: Domain knowledge-based risk calculations
-    - **Utilization Metrics**: Hospital resource usage patterns
-    - **Statistical Transformations**: Normalization and scaling
+    # Demo metrics
+    col1, col2, col3, col4 = st.columns(4)
 
-    #### **3. Model Selection**
-    - **Primary**: LightGBM (Gradient Boosting)
-    - **Secondary**: XGBoost, CatBoost, Logistic Regression
-    - **Ensemble**: Stacking and voting for optimal performance
+    with col1:
+        st.metric("🎯 Model Accuracy", "93.1%", "+4.4%")
 
-    #### **4. Hyperparameter Optimization**
-    - **Method**: Optuna-based automated tuning
-    - **Objective**: F1-score optimization
-    - **Validation**: 5-fold cross-validation with patient-level grouping
-    """
-    )
+    with col2:
+        st.metric("📊 ROC-AUC", "95.3%", "+17.3%")
 
-    # Model performance details
-    st.subheader("📊 Detailed Performance Metrics")
+    with col3:
+        st.metric("💰 Cost Savings", "$58.8M", "+300% ROI")
 
-    metrics_data = {
-        "Metric": ["ROC-AUC", "Accuracy", "Precision", "Recall", "F1-Score", "PR-AUC"],
-        "Value": [95.3, 93.1, 99.5, 86.7, 92.7, 94.2],
-        "Unit": ["%", "%", "%", "%", "%", "%"],
-    }
+    with col4:
+        st.metric("🏥 Patients Analyzed", "101,766", "+15,000")
 
-    metrics_df = pd.DataFrame(metrics_data)
-    metrics_df["Score"] = metrics_df["Value"].astype(str) + metrics_df["Unit"]
+# Model Performance Page
+elif page == "📊 Model Performance":
+    st.markdown("## 📊 **Model Performance Metrics**")
 
-    st.dataframe(metrics_df[["Metric", "Score"]], use_container_width=True)
+    col1, col2 = st.columns(2)
 
-    # Feature importance
-    st.subheader("🎯 Top Feature Importance")
+    with col1:
+        st.markdown("### 🎯 **Overall Performance**")
 
-    features = [
-        "num_medications",
-        "time_in_hospital",
-        "number_diagnoses",
-        "age",
-        "num_lab_procedures",
-    ]
-    importance = [0.18, 0.15, 0.12, 0.10, 0.08]
-
-    fig = px.bar(
-        x=features,
-        y=importance,
-        title="Top 5 Features by SHAP Value",
-        labels={"x": "Features", "y": "SHAP Importance"},
-    )
-    fig.update_traces(marker_color="lightblue")
-    st.plotly_chart(fig, use_container_width=True)
-
-elif page == "📱 API Status":
-    st.header("📱 API Status & Testing")
-
-    st.markdown(
-        """
-    ### 🌐 **API Endpoints**
-
-    #### **Base URL**: `https://your-app.railway.app` (after deployment)
-
-    #### **Available Endpoints**:
-    - **POST** `/predict` - Single patient prediction
-    - **POST** `/predict/batch` - Batch predictions
-    - **GET** `/health` - Health check
-    - **GET** `/model/info` - Model information
-    - **GET** `/docs` - Interactive API documentation
-    """
-    )
-
-    # API test section
-    st.subheader("🧪 Test API Connection")
-
-    api_url = st.text_input(
-        "API Base URL",
-        value="http://localhost:8000",
-        help="Enter your deployed API URL",
-    )
-
-    if st.button("🔍 Test Connection"):
-        try:
-            response = requests.get(f"{api_url}/health", timeout=5)
-            if response.status_code == 200:
-                st.success("✅ API is running and accessible!")
-                st.json(response.json())
-            else:
-                st.warning(f"⚠️ API responded with status code: {response.status_code}")
-        except requests.exceptions.RequestException as e:
-            st.error(f"❌ Failed to connect to API: {str(e)}")
-            st.info("💡 Make sure your API is running or deployed!")
-
-    # Sample API request
-    st.subheader("📝 Sample API Request")
-
-    sample_request = {
-        "patient_data": {
-            "patient_id": "test_001",
-            "age": 65,
-            "gender": "Female",
-            "admission_type_id": 1,
-            "discharge_disposition_id": 1,
-            "admission_source_id": 7,
-            "time_in_hospital": 3,
-            "num_lab_procedures": 41,
-            "num_procedures": 0,
-            "num_medications": 1,
-            "number_outpatient": 0,
-            "number_emergency": 0,
-            "number_inpatient": 0,
-            "diag_1": "250.00",
-            "diag_2": "250.00",
-            "diag_3": "250.00",
-            "max_glu_serum": "None",
-            "A1Cresult": "None",
-            "metformin": "No",
-            "repaglinide": "No",
-            "nateglinide": "No",
-            "chlorpropamide": "No",
-            "glimepiride": "No",
-            "acetohexamide": "No",
-            "glipizide": "No",
-            "glyburide": "No",
-            "tolbutamide": "No",
-            "pioglitazone": "No",
-            "rosiglitazone": "No",
-            "acarbose": "No",
-            "miglitol": "No",
-            "troglitazone": "No",
-            "tolazamide": "No",
-            "examide": "No",
-            "citoglipton": "No",
-            "insulin": "No",
-            "glyburide_metformin": "No",
-            "glipizide_metformin": "No",
-            "glimepiride_pioglitazone": "No",
-            "metformin_rosiglitazone": "No",
-            "metformin_pioglitazone": "No",
-            "change": "No",
-            "diabetesMed": "No",
+        metrics_data = {
+            "Metric": ["Accuracy", "ROC-AUC", "Precision", "Recall", "F1-Score"],
+            "Value": [93.1, 95.3, 99.5, 86.7, 92.7],
+            "Baseline": [88.7, 78.0, 88.7, 88.7, 88.7],
         }
-    }
 
-    st.code(json.dumps(sample_request, indent=2), language="json")
+        df_metrics = pd.DataFrame(metrics_data)
+        st.dataframe(df_metrics, use_container_width=True)
 
-    # Copy button
-    if st.button("📋 Copy Request"):
-        st.success("✅ Request copied to clipboard!")
+    with col2:
+        st.markdown("### 📈 **Performance Comparison**")
+
+        fig = go.Figure()
+
+        fig.add_trace(
+            go.Bar(
+                name="Our Model",
+                x=["Accuracy", "ROC-AUC", "Precision", "Recall", "F1-Score"],
+                y=[93.1, 95.3, 99.5, 86.7, 92.7],
+                marker_color="#1f77b4",
+            )
+        )
+
+        fig.add_trace(
+            go.Bar(
+                name="Baseline",
+                x=["Accuracy", "ROC-AUC", "Precision", "Recall", "F1-Score"],
+                y=[88.7, 78.0, 88.7, 88.7, 88.7],
+                marker_color="#ff7f0e",
+            )
+        )
+
+        fig.update_layout(
+            title="Model Performance vs Baseline",
+            yaxis_title="Percentage (%)",
+            barmode="group",
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+# Risk Analysis Page
+elif page == "🔍 Risk Analysis":
+    st.markdown("## 🔍 **Patient Risk Analysis**")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("### 📊 **Risk Distribution**")
+
+        risk_data = {
+            "Risk Level": [
+                "High Risk (>70%)",
+                "Moderate Risk (40-70%)",
+                "Low Risk (<40%)",
+            ],
+            "Percentage": [42.8, 1.34, 55.8],
+        }
+
+        df_risk = pd.DataFrame(risk_data)
+
+        fig = px.pie(
+            df_risk,
+            values="Percentage",
+            names="Risk Level",
+            color_discrete_sequence=["#dc3545", "#ffc107", "#28a745"],
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col2:
+        st.markdown("### 🎯 **Risk Factors**")
+
+        risk_factors = {
+            "Factor": [
+                "Number of Medications",
+                "Time in Hospital",
+                "Number of Diagnoses",
+                "Age",
+                "Lab Procedures",
+            ],
+            "Importance": [0.18, 0.15, 0.12, 0.10, 0.08],
+        }
+
+        df_factors = pd.DataFrame(risk_factors)
+
+        fig = px.bar(
+            df_factors,
+            x="Importance",
+            y="Factor",
+            orientation="h",
+            color="Importance",
+            color_continuous_scale="Reds",
+        )
+
+        fig.update_layout(
+            title="Top Risk Factors by Importance", xaxis_title="SHAP Importance Score"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+# Business Impact Page
+elif page == "💰 Business Impact":
+    st.markdown("## 💰 **Business Impact & ROI Analysis**")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("### 💵 **Financial Projections**")
+
+        financial_data = {
+            "Metric": [
+                "Annual Cost Savings",
+                "Quality Bonus",
+                "Penalty Avoidance",
+                "Total Impact",
+            ],
+            "Value": ["$2.25M", "$1.2M", "$1.8M", "$5.25M"],
+        }
+
+        df_financial = pd.DataFrame(financial_data)
+        st.dataframe(df_financial, use_container_width=True)
+
+        st.markdown("### 📊 **ROI Analysis**")
+        st.metric("Return on Investment", "300-500%", "High Impact")
+        st.metric("Break-even Time", "3-4 months", "Fast Recovery")
+
+    with col2:
+        st.markdown("### 📈 **5-Year Projection**")
+
+        years = [1, 2, 3, 4, 5]
+        savings = [2.25, 4.5, 6.75, 9.0, 11.25]
+        cumulative = [2.25, 6.75, 13.5, 22.5, 33.75]
+
+        fig = go.Figure()
+
+        fig.add_trace(
+            go.Scatter(
+                x=years,
+                y=savings,
+                mode="lines+markers",
+                name="Annual Savings",
+                line={"color": "#1f77b4", "width": 3},
+            )
+        )
+
+        fig.add_trace(
+            go.Scatter(
+                x=years,
+                y=cumulative,
+                mode="lines+markers",
+                name="Cumulative Savings",
+                line={"color": "#28a745", "width": 3, "dash": "dash"},
+            )
+        )
+
+        fig.update_layout(
+            title="5-Year Financial Projection",
+            xaxis_title="Year",
+            yaxis_title="Savings (Millions $)",
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
 
 # Footer
 st.markdown("---")
 st.markdown(
     """
 <div style='text-align: center; color: #666;'>
-    <p>🏥 <strong>Diabetes Readmission Prediction System</strong> | Built with Streamlit & FastAPI</p>
-    <p>📧 Contact: mj.babaie@gmail.com | 🔗 LinkedIn: <a href='https://www.linkedin.com/in/mohammadbabaie/'>Mohammad Babaie</a></p>
+    <p>🏥 <strong>Diabetes Readmission Prediction Dashboard</strong> | Demo Version</p>
+    <p>Built with Streamlit • Powered by Machine Learning</p>
 </div>
 """,
     unsafe_allow_html=True,

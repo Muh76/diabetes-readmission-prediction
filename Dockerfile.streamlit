@@ -26,15 +26,6 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy Streamlit application
 COPY streamlit_app.py ./streamlit_app.py
 
-# Copy essential data files for dashboard
-COPY feature_scaler.pkl ./feature_scaler.pkl
-COPY feature_names.pkl ./feature_names.pkl
-COPY models/ ./models/
-
-# Copy dashboard assets
-COPY assets/ ./assets/
-COPY notebooks/ ./notebooks/
-
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app && \
     chown -R app:app /app
