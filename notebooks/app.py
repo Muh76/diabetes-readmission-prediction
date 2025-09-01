@@ -103,6 +103,8 @@ async def startup_event():
                     logger.warning(f"⚠️ {model_name} model not found at {model_path}")
             except Exception as e:
                 logger.error(f"❌ Failed to load {model_name} model: {e}")
+                # Continue loading other models instead of crashing
+                continue
 
         logger.info(
             f"🎯 Startup completed. Models loaded: {len([m for m in models.values() if m is not None])}"
@@ -112,7 +114,8 @@ async def startup_event():
     except Exception as e:
         logger.error(f"❌ Startup failed: {e}")
         logger.error(f"❌ Exception details: {type(e).__name__}: {str(e)}")
-        raise e
+        # Don't crash the app - continue with partial loading
+        logger.warning("⚠️ Continuing with partial model loading...")
 
 
 # Add CORS middleware
@@ -564,6 +567,8 @@ async def simple_health_check():
         "timestamp": datetime.now().isoformat(),
         "service": "Diabetes Readmission API",
         "version": "2.0.0",
+        "models_loaded": len([m for m in models.values() if m is not None]),
+        "message": "API is running",
     }
 
 
