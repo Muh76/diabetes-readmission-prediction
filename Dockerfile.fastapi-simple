@@ -1,4 +1,4 @@
-# Simple Dockerfile for FastAPI
+# Simple Dockerfile for FastAPI - Copy app to root
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -14,9 +14,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy application files
-COPY main.py .
-COPY notebooks/app_improved.py ./app_improved.py
+# Copy application files to root directory
+COPY notebooks/app_improved.py ./app.py
 COPY feature_scaler.pkl .
 COPY feature_names.pkl .
 COPY models/ ./models/
@@ -28,5 +27,5 @@ USER app
 # Expose port
 EXPOSE 8000
 
-# Start the application
-CMD ["python", "main.py"]
+# Start the application directly
+CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
