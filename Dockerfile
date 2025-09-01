@@ -25,8 +25,8 @@ COPY requirements-railway.txt ./requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY notebooks/app.py ./app.py
+# Copy application code - USE THE FIXED VERSION
+COPY notebooks/app_improved.py ./app.py
 
 # Copy essential files from root directory
 COPY feature_scaler.pkl ./feature_scaler.pkl
