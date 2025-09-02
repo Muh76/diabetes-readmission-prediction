@@ -761,7 +761,7 @@ st.markdown(
     <div style="text-align: center; color: #666;">
         <p><strong>Advanced Diabetes Readmission Prediction System</strong> | Professional Portfolio Version</p>
         <p>Built with Streamlit • Powered by XGBoost • SHAP & LIME Analysis • Production-Ready Deployment</p>
-    </div>
-    """,
+</div>
+""",
     unsafe_allow_html=True,
 )

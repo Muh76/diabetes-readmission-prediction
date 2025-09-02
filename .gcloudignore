@@ -1,0 +1,69 @@
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Large data files
+*.csv
+X_train_final.csv
+X_test_final.csv
+y_train_final.csv
+y_test_final.csv
+
+# Jupyter notebooks with outputs
+notebooks/*.ipynb
+*.ipynb
+
+# MLflow database
+mlflow.db
+
+# Catboost info
+catboost_info/
+
+# Logs
+logs/
+*.log
+
+# Documentation PDFs
+*.pdf
+
+# Assets (keep only if needed)
+assets/
+
+# Git
+.git/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE files
+.vscode/
+.idea/
+
+# Test files
+tests/
+.pytest_cache/
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Deployment files for other platforms
+railway*
+vercel*
+Dockerfile*
+!Dockerfile.cloudrun
+cloudbuild.yaml
+render.yaml
+Procfile
+runtime.txt
+app.yaml
