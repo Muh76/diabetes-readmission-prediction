@@ -126,13 +126,6 @@ class PatientData(BaseModel):
         description="Type of admission: 1=Emergency, 2=Elective, 3=Urgent, 4=Newborn, 5=Trauma, 6=Not Available, 7=Not Mapped, 8=NULL, 9=Unknown",
         example=1,
     )
-    discharge_disposition_id: int = Field(
-        ...,
-        ge=1,
-        le=30,
-        description="Discharge disposition (known at discharge time)",
-        example=1,
-    )
     admission_source_id: int = Field(
         ...,
         ge=1,
@@ -206,7 +199,6 @@ class PatientData(BaseModel):
                 "encounter_id": 12345,
                 "patient_nbr": 67890,
                 "admission_type_id": 1,
-                "discharge_disposition_id": 1,
                 "admission_source_id": 7,
                 "time_in_hospital": 3,
                 "num_lab_procedures": 41,
@@ -616,12 +608,11 @@ async def predict_readmission(
                 detail="Threshold must be between 0 and 1",
             )
 
-        # Prepare features
+        # Prepare features (matching the trained model's feature order)
         feature_data = [
             patient.encounter_id,
             patient.patient_nbr,
             patient.admission_type_id,
-            patient.discharge_disposition_id,
             patient.admission_source_id,
             patient.time_in_hospital,
             patient.num_lab_procedures,
@@ -636,9 +627,12 @@ async def predict_readmission(
             patient.clinical_risk_score,
         ]
 
-        # Scale features
-        if feature_scaler is not None:
-            feature_data = feature_scaler.transform([feature_data])
+        # Scale features (skip scaling since model was trained with raw features)
+        # if feature_scaler is not None:
+        #     feature_data = feature_scaler.transform([feature_data])
+
+        # Reshape features for prediction (ensure it's a 2D array)
+        feature_data = [feature_data]
 
         # Make prediction
         model = models[model_name]
