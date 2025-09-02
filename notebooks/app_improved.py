@@ -40,7 +40,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("app.log"), logging.StreamHandler()],
+    handlers=[
+        logging.StreamHandler()
+    ],  # Remove FileHandler to avoid read-only filesystem issues
 )
 logger = logging.getLogger(__name__)
 
@@ -584,7 +586,7 @@ async def predict_readmission(
     model_name: str = "xgboost",
     threshold: Optional[float] = 0.5,
     request_timing: dict = Depends(get_request_timing),
-    request: Request = Depends(),
+    request: Request = None,
 ):
     """
     Predict 30-day readmission risk for a single patient

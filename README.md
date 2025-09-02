@@ -312,9 +312,9 @@ docker-compose up -d
 
 #### **🌐 Live Hosted Applications**
 - **📊 Interactive Streamlit Dashboard:** [https://diabetes-readmission-prediction-drvwuus2xt7arfkucmvreq.streamlit.app/](https://diabetes-readmission-prediction-drvwuus2xt7arfkucmvreq.streamlit.app/)
-- **🔌 Main ML API:** [https://diabetes-ml-api.proudbush-f2918ccc.eastus2.azurecontainerapps.io/](https://diabetes-ml-api.proudbush-f2918ccc.eastus2.azurecontainerapps.io/)
-- **🔌 Readmission API:** [https://diabetes-readmission-api.proudbush-f2918ccc.eastus2.azurecontainerapps.io/](https://diabetes-readmission-api.proudbush-f2918ccc.eastus2.azurecontainerapps.io/)
-- **📚 API Documentation:** [https://diabetes-ml-api.proudbush-f2918ccc.eastus2.azurecontainerapps.io/docs](https://diabetes-ml-api.proudbush-f2918ccc.eastus2.azurecontainerapps.io/docs)
+- **🔌 FastAPI ML API:** [https://arched-catwalk-459814-b0.ew.r.appspot.com/](https://arched-catwalk-459814-b0.ew.r.appspot.com/)
+- **📚 API Documentation:** [https://arched-catwalk-459814-b0.ew.r.appspot.com/docs](https://arched-catwalk-459814-b0.ew.r.appspot.com/docs)
+- **❤️ Health Check:** [https://arched-catwalk-459814-b0.ew.r.appspot.com/health](https://arched-catwalk-459814-b0.ew.r.appspot.com/health)
 
 #### **🏠 Local Dashboard Access**
 All dashboards are also available as **interactive HTML files** that can be served locally:
