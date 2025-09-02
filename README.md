@@ -18,6 +18,16 @@ This is a comprehensive **MLOps production system** for predicting 30-day hospit
 - **Technical Excellence**: Full MLOps pipeline, automated monitoring, production API
 - **Healthcare Compliance**: HIPAA-aware, clinical validation, stakeholder-ready
 
+## 🌐 **Live Demo & Applications**
+
+### **🚀 Try It Now - Live Applications**
+- **📊 Interactive Dashboard**: [https://diabetes-readmission-prediction-drvwuus2xt7arfkucmvreq.streamlit.app/](https://diabetes-readmission-prediction-drvwuus2xt7arfkucmvreq.streamlit.app/)
+- **🔌 ML API**: [https://arched-catwalk-459814-b0.ew.r.appspot.com/](https://arched-catwalk-459814-b0.ew.r.appspot.com/)
+- **📚 API Documentation**: [https://arched-catwalk-459814-b0.ew.r.appspot.com/docs](https://arched-catwalk-459814-b0.ew.r.appspot.com/docs)
+- **❤️ Health Check**: [https://arched-catwalk-459814-b0.ew.r.appspot.com/health](https://arched-catwalk-459814-b0.ew.r.appspot.com/health)
+
+**💡 Quick Test**: Click the dashboard link above to explore interactive visualizations, or use the API to make predictions programmatically!
+
 ## 🚀 **Quick Start (5 Minutes to Demo)**
 
 ### **Local API Demo**
@@ -309,12 +319,6 @@ docker-compose up -d
 - **Clinical Validation**: Medical expert verification
 
 ### **📱 Dashboard Access**
-
-#### **🌐 Live Hosted Applications**
-- **📊 Interactive Streamlit Dashboard:** [https://diabetes-readmission-prediction-drvwuus2xt7arfkucmvreq.streamlit.app/](https://diabetes-readmission-prediction-drvwuus2xt7arfkucmvreq.streamlit.app/)
-- **🔌 FastAPI ML API:** [https://arched-catwalk-459814-b0.ew.r.appspot.com/](https://arched-catwalk-459814-b0.ew.r.appspot.com/)
-- **📚 API Documentation:** [https://arched-catwalk-459814-b0.ew.r.appspot.com/docs](https://arched-catwalk-459814-b0.ew.r.appspot.com/docs)
-- **❤️ Health Check:** [https://arched-catwalk-459814-b0.ew.r.appspot.com/health](https://arched-catwalk-459814-b0.ew.r.appspot.com/health)
 
 #### **🏠 Local Dashboard Access**
 All dashboards are also available as **interactive HTML files** that can be served locally:
