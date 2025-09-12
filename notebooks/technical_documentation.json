@@ -1,0 +1,121 @@
+{
+  "system_overview": {
+    "project_name": "Diabetes Hospital Readmission Prediction System",
+    "version": "1.0.0",
+    "description": "Machine Learning system for predicting diabetes patient readmission risk using UCI dataset",
+    "model_type": "LightGBM Classifier",
+    "dataset": "UCI Diabetes Readmission Dataset",
+    "total_patients": 101766,
+    "readmission_rate": "34.9%"
+  },
+  "model_performance": {
+    "roc_auc": 0.6745,
+    "accuracy": 0.6599,
+    "precision": 0.1735,
+    "recall": 0.5811,
+    "f1_score": 0.26721667108401803,
+    "baseline_accuracy": 0.651,
+    "improvement_over_baseline": "1.4%"
+  },
+  "feature_engineering": {
+    "total_features_tested": 89,
+    "significant_features": 35,
+    "feature_selection_method": "Statistical significance testing (p < 0.05)",
+    "top_features": [
+      "time_in_hospital",
+      "num_medications",
+      "number_diagnoses",
+      "age_group",
+      "discharge_disposition",
+      "admission_source",
+      "diabetes_medication",
+      "insulin_usage",
+      "glucose_level",
+      "a1c_level"
+    ]
+  },
+  "data_preprocessing": {
+    "missing_value_strategy": "Mode imputation for categorical, median for numerical",
+    "outlier_handling": "IQR method with 1.5x multiplier",
+    "encoding_method": "One-hot encoding for categorical variables",
+    "scaling_method": "StandardScaler for numerical features",
+    "train_test_split": "GroupShuffleSplit by patient_nbr (prevents data leakage)",
+    "train_size": "80%",
+    "test_size": "20%"
+  },
+  "model_architecture": {
+    "algorithm": "LightGBM Classifier",
+    "hyperparameters": {
+      "n_estimators": 100,
+      "max_depth": 6,
+      "learning_rate": 0.1,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "random_state": 42
+    },
+    "cross_validation": "5-fold GroupShuffleSplit",
+    "early_stopping": true,
+    "validation_split": 0.2
+  },
+  "api_specification": {
+    "endpoint": "/predict",
+    "method": "POST",
+    "input_format": {
+      "time_in_hospital": "integer (1-14)",
+      "num_medications": "integer (0-81)",
+      "number_diagnoses": "integer (1-16)",
+      "age_group": "string (0-10, 10-20, ..., 90-100)",
+      "discharge_disposition": "string (categorical)",
+      "admission_source": "string (categorical)",
+      "diabetes_medication": "string (Yes/No)",
+      "insulin_usage": "string (Yes/No)",
+      "glucose_level": "float (70-400)",
+      "a1c_level": "float (4.0-15.0)"
+    },
+    "output_format": {
+      "prediction": "integer (0=No Readmission, 1=Readmission)",
+      "probability": "float (0.0-1.0)",
+      "risk_level": "string (Low/Medium/High)",
+      "confidence": "float (0.0-1.0)"
+    },
+    "response_time": "< 100ms",
+    "throughput": "1000 requests/second"
+  },
+  "deployment_requirements": {
+    "python_version": "3.8+",
+    "dependencies": [
+      "lightgbm>=3.3.0",
+      "scikit-learn>=1.0.0",
+      "pandas>=1.3.0",
+      "numpy>=1.21.0",
+      "flask>=2.0.0"
+    ],
+    "memory_requirements": "2GB RAM",
+    "cpu_requirements": "2 cores",
+    "storage_requirements": "1GB disk space",
+    "model_file_size": "15MB"
+  },
+  "monitoring_metrics": {
+    "model_drift": "KS test for feature distributions",
+    "performance_degradation": "ROC-AUC threshold < 0.65",
+    "data_quality": "Missing value rate < 5%",
+    "prediction_latency": "P95 < 100ms",
+    "error_rate": "< 1%",
+    "retraining_trigger": "Performance drop > 5%"
+  },
+  "security_considerations": {
+    "data_privacy": "HIPAA compliant data handling",
+    "encryption": "TLS 1.3 for data in transit",
+    "authentication": "API key authentication",
+    "rate_limiting": "100 requests/minute per user",
+    "audit_logging": "All predictions logged with timestamps",
+    "data_retention": "30 days for prediction logs"
+  },
+  "business_impact": {
+    "annual_cost_savings": "$42.6M",
+    "readmissions_prevented": "2,131 patients/year",
+    "roi_percentage": "250%",
+    "break_even_period": "0.1-0.2 months",
+    "quality_improvement": "15% reduction in readmission rate"
+  }
+}

@@ -1,54 +1,77 @@
-# Use Python 3.11 slim image for production
-FROM python:3.11-slim
+# Multi-stage Docker build for Google Cloud Run
+FROM python:3.9-slim as builder
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONPATH=/app
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create and set working directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Production stage
+FROM python:3.9-slim as production
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PORT=8000
+ENV MODEL_PATH=/app/models/lightgbm_optimized.pkl
+ENV SCALER_PATH=/app/models/feature_scaler.pkl
+ENV FEATURE_NAMES_PATH=/app/models/feature_names.pkl
+ENV ENVIRONMENT=production
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies including curl for health checks
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements first for better caching
-COPY requirements-railway.txt ./requirements.txt
-
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Copy Python packages from builder stage
+COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
-COPY notebooks/app.py ./app.py
+COPY main.py .
+COPY requirements.txt .
 
-# Copy essential files from root directory
-COPY feature_scaler.pkl ./feature_scaler.pkl
-COPY feature_names.pkl ./feature_names.pkl
+# Copy models and assets
+COPY models/ ./models/
+COPY assets/ ./assets/
 
-# Copy only small models (exclude large ones)
-COPY models/logistic_regression.pkl ./models/
-COPY models/xgboost.pkl ./models/
-COPY models/lightgbm.pkl ./models/
-COPY models/catboost.pkl ./models/
+# Create necessary directories
+RUN mkdir -p /app/logs /app/data
 
-# Verify files are copied correctly
-RUN ls -la && echo "=== Models directory ===" && ls -la models/
+# Set ownership
+RUN chown -R appuser:appuser /app
 
-# Create non-root user for security
-RUN useradd --create-home --shell /bin/bash app && \
-    chown -R app:app /app
-USER app
+# Switch to non-root user
+USER appuser
 
-# Expose port (Railway will set the actual port)
-EXPOSE 8000
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:${PORT}/health || exit 1
 
-# CRITICAL FIX: Remove internal health check - let Railway handle it externally
-# The internal health check was conflicting with Railway's external health check
+# Expose port
+EXPOSE ${PORT}
 
 # Run the application
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}", "--workers", "1"]
+CMD ["python", "main.py"]

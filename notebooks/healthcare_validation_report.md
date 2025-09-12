@@ -2,23 +2,23 @@
 # HEALTHCARE PIPELINE VALIDATION REPORT
 
 ## Validation Summary
-- **Overall Score**: 63.8/100
-- **Temporal Leakage**: ✅ PASSED
-- **Clinical Ranges**: 0/2 features valid
-- **Data Quality**: ✅ PASSED
-- **Interpretability**: 44.0%
+- **Overall Score**: 52.1/100
+- **Temporal Leakage**: ❌ ISSUES DETECTED
+- **Clinical Ranges**: 3/8 features valid
+- **Data Quality**: ⚠️ ISSUES DETECTED
+- **Interpretability**: 23.4%
 
 ## Critical Issues
 - None detected
 
 ## Recommendations
-- Temporal integrity maintained
+- Address temporal leakage issues
 - Validate clinical ranges
 - Improve feature interpretability
 
 ## Production Readiness
-⚠️ NEEDS IMPROVEMENT
+❌ NOT READY
 
 ---
-Generated on: 2025-08-19 12:21:29
+Generated on: 2025-09-11 10:03:55
 Pipeline Version: 1.0

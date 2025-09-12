@@ -1,0 +1,29 @@
+
+VISUALIZATION DATA EXPORT SUMMARY
+================================
+
+RISK ASSESSMENT:
+• Overall Risk Score: 0.900 (Medium Risk)
+• Risk Categories: 5 categories analyzed
+• Risk Status: Appropriate for healthcare ML deployment
+
+FINANCIAL PROJECTIONS:
+• 3-Year Implementation Cost: $980,000.00
+• 3-Year Total Revenue: $12,285,995.07
+• Net Profit (3 years): $11,305,995.07
+• ROI: 1153.7%
+• Break-even: 3.1 months
+
+BUSINESS IMPACT:
+• Annual Cost Savings: $7,955,189.76
+• Annual Quality Bonus: $159,103.80
+• Annual Penalty Avoidance: $238,655.69
+• Total Annual Impact: $8,352,949.25
+
+MODEL PERFORMANCE:
+• Current ROC-AUC: 0.6745
+• Baseline ROC-AUC: 0.5000
+• Performance Improvement: 17.4%
+
+EXPORT STATUS: ✅ SUCCESSFUL
+All visualization data exported to visualization_data.json

@@ -8,10 +8,10 @@ docker build -t diabetic-readmission-ml .
 if [ $? -eq 0 ]; then
     echo "✅ Docker image built successfully!"
     echo "🚀 Starting services with docker-compose..."
-
+    
     # Start services
     docker-compose up -d
-
+    
     echo "✅ Services started successfully!"
     echo "�� MLflow UI: http://localhost:5000"
     echo "🔌 API: http://localhost:8000"

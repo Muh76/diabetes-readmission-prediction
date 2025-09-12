@@ -13,7 +13,7 @@ services:
       - MLFLOW_TRACKING_URI=sqlite:///mlflow.db
       - MODEL_PATH=/app/models
     restart: unless-stopped
-
+    
   mlflow:
     build: .
     ports:

@@ -1,8 +1,22 @@
-streamlit>=1.28.0
-pandas>=1.5.0
-plotly>=5.15.0
-numpy>=1.24.0
-scikit-learn>=1.3.0
-xgboost>=1.7.0
-shap>=0.42.0
-lime>=0.2.0
+# Streamlit Cloud Requirements
+# Core dependencies for the diabetes readmission prediction dashboard
+
+# Streamlit and web framework
+streamlit==1.28.1
+streamlit-option-menu==0.3.6
+
+# Data processing and visualization
+pandas==2.1.4
+numpy==1.24.3
+plotly==5.17.0
+
+# Machine learning (lightweight for demo)
+scikit-learn==1.3.2
+joblib==1.3.2
+
+# Optional: For enhanced performance
+# lightgbm==4.1.0  # Uncomment if you want to load actual models
+
+# Additional utilities
+requests==2.31.0
+python-dateutil==2.8.2
