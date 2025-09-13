@@ -205,9 +205,12 @@ def preprocess_features(patient_data: PatientData) -> np.ndarray:
         
         # Ensure all expected features are present
         if feature_names is not None:
-            for feature in feature_names:
-                if feature not in df.columns:
-                    df[feature] = 0
+            missing_features = [feature for feature in feature_names if feature not in df.columns]
+            if missing_features:
+                # Create a DataFrame with missing features set to 0
+                missing_df = pd.DataFrame(0, index=df.index, columns=missing_features)
+                # Concatenate instead of adding one by one to avoid fragmentation
+                df = pd.concat([df, missing_df], axis=1)
         
         # Select only the features used in training
         if feature_names is not None:
@@ -290,7 +293,7 @@ async def predict_readmission(
             confidence=confidence,
             model_version="1.0.0",
             timestamp=datetime.utcnow().isoformat() + "Z",
-            features_used=feature_names.tolist() if feature_names is not None else []
+            features_used=list(feature_names) if feature_names is not None else []
         )
         
     except Exception as e:
@@ -306,7 +309,7 @@ async def get_model_info():
         "performance_metrics": model_metadata.get("performance", {}),
         "feature_count": model_metadata.get("features_count", 0),
         "model_type": model_metadata.get("model_type", "Unknown"),
-        "feature_names": feature_names.tolist() if feature_names is not None else []
+        "feature_names": list(feature_names) if feature_names is not None else []
     }
 
 # Main function for running the app

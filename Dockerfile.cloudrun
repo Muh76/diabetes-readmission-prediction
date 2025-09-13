@@ -13,10 +13,15 @@ COPY requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
-COPY notebooks/app_improved.py ./app.py
-COPY feature_scaler.pkl .
-COPY feature_names.pkl .
+COPY main.py ./main.py
 COPY models/ ./models/
+
+# Debug: List files to verify they exist
+RUN ls -la /app/
+RUN ls -la /app/models/
+
+# Set working directory to /app
+WORKDIR /app
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
@@ -26,4 +31,4 @@ USER app
 EXPOSE 8080
 
 # Start the application
-CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]

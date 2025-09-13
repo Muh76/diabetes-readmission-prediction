@@ -1,6 +1,7 @@
 # Exclude only the problematic large model files
 models/random_forest_optimized.pkl
-models/*_optimized.pkl
+models/catboost_optimized.pkl
+models/xgboost_optimized.pkl
 
 # Exclude development files
 *.ipynb
