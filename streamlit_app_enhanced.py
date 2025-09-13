@@ -23,8 +23,8 @@ ACTUAL_METRICS = {
     "model_name": "LightGBM Classifier"
 }
 
-# API Configuration
-API_URL = "https://diabetes-readmission-api-5wwrqt3oua-uc.a.run.app"
+# API Configuration - Use local API for development
+API_URL = os.getenv("API_URL", "http://localhost:8000")  # Default to local API
 
 # Page configuration
 st.set_page_config(
@@ -170,11 +170,21 @@ st.sidebar.markdown(f"""
 **Status:** Production Ready  
 """)
 
+# Check API availability
+def check_api_status():
+    try:
+        response = requests.get(f"{API_URL}/health", timeout=5)
+        return response.status_code == 200
+    except:
+        return False
+
+api_available = check_api_status()
+
 # Check if API is available
-if api_data:
-    st.sidebar.success("✅ Model Available")
+if api_available:
+    st.sidebar.success("✅ API Available")
 else:
-    st.sidebar.warning("⚠️ Model Not Available (Using Demo Mode)")
+    st.sidebar.warning("⚠️ API Offline (Using Demo Mode)")
 
 # Overview Page
 if page == "🏠 Overview":
@@ -222,7 +232,7 @@ if page == "🏠 Overview":
 elif page == "🔮 Prediction":
     st.markdown('<h2 class="sub-header">Patient Risk Prediction</h2>', unsafe_allow_html=True)
     
-    if not api_url:
+    if not api_available:
         st.error("❌ API is currently unavailable. Please try again later.")
         st.stop()
     
@@ -259,7 +269,7 @@ elif page == "🔮 Prediction":
                 }
                 
                 # Make prediction
-                response = requests.post(f"{api_url}/predict", json=input_data, timeout=10)
+                response = requests.post(f"{API_URL}/predict", json=input_data, timeout=10)
                 
                 if response.status_code == 200:
                     result = response.json()
