@@ -178,9 +178,10 @@ def check_api_status():
     except:
         return False
 
+# Check if API is available (dynamic check)
 api_available = check_api_status()
 
-# Check if API is available
+# Sidebar API status (dynamic)
 if api_available:
     st.sidebar.success("✅ API Available")
 else:
@@ -232,7 +233,9 @@ if page == "🏠 Overview":
 elif page == "🔮 Prediction":
     st.markdown('<h2 class="sub-header">Patient Risk Prediction</h2>', unsafe_allow_html=True)
     
-    if not api_available:
+    # Check API status dynamically
+    current_api_status = check_api_status()
+    if not current_api_status:
         st.error("❌ API is currently unavailable. Please try again later.")
         st.stop()
     
