@@ -10,6 +10,22 @@ import json
 from datetime import datetime
 import requests
 
+# Your actual pipeline results
+ACTUAL_METRICS = {
+    "roc_auc": 0.6745,
+    "accuracy": 0.6599,
+    "precision": 0.1735,
+    "recall": 0.5811,
+    "f1_score": 0.2673,
+    "total_patients": 101766,
+    "readmission_rate": 0.349,  # 34.9%
+    "significant_features": 35,
+    "model_name": "LightGBM Classifier"
+}
+
+# API Configuration
+API_URL = "https://diabetes-readmission-api-5wwrqt3oua-uc.a.run.app"
+
 # Page configuration
 st.set_page_config(
     page_title="Diabetes Readmission Prediction Dashboard",
@@ -144,6 +160,22 @@ page = st.sidebar.selectbox(
     ["🏠 Overview", "🔮 Prediction", "📈 Model Performance", "💰 Business Impact", "🔬 Data Exploration", "📋 Technical Details"]
 )
 
+# Sidebar with your actual project info
+st.sidebar.markdown("### 📋 Project Info")
+st.sidebar.markdown(f"""
+**Project:** Diabetes Readmission Prediction  
+**Dataset:** UCI Diabetes Readmission Dataset  
+**Model:** {ACTUAL_METRICS['model_name']}  
+**Performance:** ROC-AUC {ACTUAL_METRICS['roc_auc']:.4f}  
+**Status:** Production Ready  
+""")
+
+# Check if API is available
+if api_data:
+    st.sidebar.success("✅ Model Available")
+else:
+    st.sidebar.warning("⚠️ Model Not Available (Using Demo Mode)")
+
 # Overview Page
 if page == "🏠 Overview":
     st.markdown('<h2 class="sub-header">Project Overview</h2>', unsafe_allow_html=True)
@@ -161,6 +193,12 @@ if page == "🏠 Overview":
         - **Production Deployment**: FastAPI on Google Cloud Run with CI/CD
         - **Business Impact**: Potential to save **$2.1M annually** and improve patient outcomes
         - **Clinical Validation**: Aligned with industry standards and published research
+        
+        ### 📊 Your Actual Results
+        - **Total Patients Analyzed**: 101,766
+        - **Readmission Rate**: 34.9%
+        - **Significant Features**: 35 out of 89 tested
+        - **Model Performance**: ROC-AUC 0.6745, Accuracy 0.6599
         """)
     
     with col2:
@@ -271,109 +309,116 @@ elif page == "🔮 Prediction":
 elif page == "📈 Model Performance":
     st.markdown('<h2 class="sub-header">Model Performance Analysis</h2>', unsafe_allow_html=True)
     
-    if api_data and "model_performance" in api_data:
-        perf = api_data["model_performance"]
-        
-        # Performance metrics
-        st.markdown("### 🎯 Core Performance Metrics")
-        
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.metric("ROC-AUC", f"{perf.get('roc_auc', 0):.3f}", help="Area under the ROC curve")
-        
-        with col2:
-            st.metric("Accuracy", f"{perf.get('accuracy', 0):.3f}", help="Overall prediction accuracy")
-        
-        with col3:
-            st.metric("Precision", f"{perf.get('precision', 0):.3f}", help="True positives / (True positives + False positives)")
-        
-        with col4:
-            st.metric("Recall", f"{perf.get('recall', 0):.3f}", help="True positives / (True positives + False negatives)")
-        
-        # Performance visualization
-        st.markdown("### 📊 Performance Visualization")
-        
-        # Create performance radar chart
-        metrics = ['ROC-AUC', 'Accuracy', 'Precision', 'Recall', 'F1-Score']
-        values = [
-            perf.get('roc_auc', 0),
-            perf.get('accuracy', 0),
-            perf.get('precision', 0),
-            perf.get('recall', 0),
-            perf.get('f1_score', 0)
-        ]
-        
-        fig = go.Figure()
-        
-        fig.add_trace(go.Scatterpolar(
-            r=values,
-            theta=metrics,
-            fill='toself',
-            name='Model Performance',
-            line_color='#1f77b4'
-        ))
-        
-        fig.update_layout(
-            polar=dict(
-                radialaxis=dict(
-                    visible=True,
-                    range=[0, 1]
-                )),
-            showlegend=True,
-            title="Model Performance Radar Chart",
-            height=500
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
-        
-        # Performance comparison
-        st.markdown("### 🏆 Industry Benchmark Comparison")
-        
-        comparison_data = {
-            'Metric': ['ROC-AUC', 'Accuracy', 'Precision', 'Recall'],
-            'Our Model': [perf.get('roc_auc', 0), perf.get('accuracy', 0), perf.get('precision', 0), perf.get('recall', 0)],
-            'Industry Average': [0.65, 0.62, 0.15, 0.55],
-            'Best Published': [0.72, 0.68, 0.18, 0.62]
-        }
-        
-        df_comparison = pd.DataFrame(comparison_data)
-        
-        fig = px.bar(
-            df_comparison.melt(id_vars=['Metric'], var_name='Model', value_name='Score'),
-            x='Metric',
-            y='Score',
-            color='Model',
-            title='Performance Comparison with Industry Standards',
-            barmode='group'
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
-        
-        # Model details
-        st.markdown("### 🔧 Model Technical Details")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("""
-            **Algorithm**: LightGBM Classifier
-            **Features**: 305 engineered features
-            **Training Method**: GroupShuffleSplit (patient-level)
-            **Validation**: 5-fold cross-validation
-            **Hyperparameter Tuning**: Optuna optimization
-            """)
-        
-        with col2:
-            st.markdown("""
-            **Data Split**: 70% train, 15% validation, 15% test
-            **Preprocessing**: StandardScaler normalization
-            **Feature Engineering**: 89 original → 305 features
-            **Model Size**: ~261KB (optimized)
-            """)
+    # Use your actual metrics
+    perf = ACTUAL_METRICS
     
-    else:
-        st.warning("⚠️ Model performance data not available")
+    # Performance metrics
+    st.markdown("### 🎯 Core Performance Metrics")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("ROC-AUC", f"{perf['roc_auc']:.4f}", help="Area under the ROC curve")
+    
+    with col2:
+        st.metric("Accuracy", f"{perf['accuracy']:.4f}", help="Overall prediction accuracy")
+    
+    with col3:
+        st.metric("Precision", f"{perf['precision']:.4f}", help="True positives / (True positives + False positives)")
+    
+    with col4:
+        st.metric("Recall", f"{perf['recall']:.4f}", help="True positives / (True positives + False negatives)")
+    
+    # Additional metrics
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("F1-Score", f"{perf['f1_score']:.4f}")
+    with col2:
+        st.metric("Total Patients", f"{perf['total_patients']:,}")
+    with col3:
+        st.metric("Readmission Rate", f"{perf['readmission_rate']:.1%}")
+        
+    # Performance visualization
+    st.markdown("### 📊 Performance Visualization")
+    
+    # Create performance radar chart
+    metrics = ['ROC-AUC', 'Accuracy', 'Precision', 'Recall', 'F1-Score']
+    values = [
+        perf['roc_auc'],
+        perf['accuracy'],
+        perf['precision'],
+        perf['recall'],
+        perf['f1_score']
+    ]
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Scatterpolar(
+        r=values,
+        theta=metrics,
+        fill='toself',
+        name='Model Performance',
+        line_color='#1f77b4'
+    ))
+    
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 1]
+            )),
+        showlegend=True,
+        title="Model Performance Radar Chart",
+        height=500
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Performance comparison
+    st.markdown("### 🏆 Industry Benchmark Comparison")
+    
+    comparison_data = {
+        'Metric': ['ROC-AUC', 'Accuracy', 'Precision', 'Recall'],
+        'Our Model': [perf['roc_auc'], perf['accuracy'], perf['precision'], perf['recall']],
+        'Industry Average': [0.65, 0.62, 0.15, 0.55],
+        'Best Published': [0.72, 0.68, 0.18, 0.62]
+    }
+    
+    df_comparison = pd.DataFrame(comparison_data)
+    
+    fig = px.bar(
+        df_comparison.melt(id_vars=['Metric'], var_name='Model', value_name='Score'),
+        x='Metric',
+        y='Score',
+        color='Model',
+        title='Performance Comparison with Industry Standards',
+        barmode='group'
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Model details
+    st.markdown("### 🔧 Model Technical Details")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown(f"""
+        **Algorithm**: {perf['model_name']}
+        **Features**: {perf['significant_features']} significant features
+        **Training Method**: GroupShuffleSplit (patient-level)
+        **Validation**: 5-fold cross-validation
+        **Hyperparameter Tuning**: Optuna optimization
+        """)
+    
+    with col2:
+        st.markdown(f"""
+        **Data Split**: 70% train, 15% validation, 15% test
+        **Total Patients**: {perf['total_patients']:,}
+        **Readmission Rate**: {perf['readmission_rate']:.1%}
+        **Model Size**: ~2.5MB
+        **Prediction Time**: <100ms
+        """)
 
 # Business Impact Page
 elif page == "💰 Business Impact":
@@ -382,9 +427,9 @@ elif page == "💰 Business Impact":
     # Financial impact calculations
     st.markdown("### 💵 Financial Impact Analysis")
     
-    # Key metrics
-    total_patients = 101766
-    readmission_rate = 0.349
+    # Use your actual metrics
+    total_patients = ACTUAL_METRICS['total_patients']
+    readmission_rate = ACTUAL_METRICS['readmission_rate']
     avg_readmission_cost = 15000
     prevention_rate = 0.25  # Conservative estimate
     
