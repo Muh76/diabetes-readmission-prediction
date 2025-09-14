@@ -216,7 +216,7 @@ def show_prediction_page(api_available):
     st.markdown('<h2 class="sub-header">🔮 Patient Readmission Prediction</h2>', unsafe_allow_html=True)
     
     if api_available:
-        st.success("✅ **Comprehensive API Available** - Real-time predictions with all 90 features")
+        st.success("✅ **Comprehensive API Available** - Real-time predictions with all 305 features")
     else:
         st.warning("⚠️ **API Offline** - Using demo mode with realistic predictions")
     
@@ -822,7 +822,7 @@ def show_overview(api_available):
     
     # API Status at top
     if api_available:
-        st.success("✅ **Comprehensive API Available** - Real-time predictions with all 90 features")
+        st.success("✅ **Comprehensive API Available** - Real-time predictions with all 305 features")
     else:
         st.warning("⚠️ **API Offline** - Using demo mode")
     
@@ -842,7 +842,7 @@ def show_overview(api_available):
         st.markdown("""
         - **Advanced ML Pipeline**: Feature engineering, hyperparameter optimization, and cross-validation
         - **Production Deployment**: FastAPI on Google Cloud Run with CI/CD
-        - **Comprehensive API**: All 90 features with real feature names
+        - **Comprehensive API**: All 305 features with real feature names
         """)
     
     with col2:
