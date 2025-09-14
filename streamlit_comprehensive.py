@@ -1,3 +1,7 @@
+# Diabetes Readmission Prediction Dashboard - DEPLOYMENT VERSION
+# This file is specifically for Streamlit Cloud deployment
+# All problematic imports removed - NO lime, shap, scipy, seaborn, matplotlib
+
 import streamlit as st
 import pandas as pd
 import numpy as np
