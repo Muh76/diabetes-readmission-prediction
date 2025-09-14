@@ -219,6 +219,19 @@ def show_prediction_page(api_available):
         st.success("✅ **Comprehensive API Available** - Real-time predictions with all 305 features")
     else:
         st.warning("⚠️ **API Offline** - Using demo mode with realistic predictions")
+        st.info("💡 **Debug Info**: API status check failed. This might be due to CORS restrictions or network issues.")
+        
+        # Add API test button
+        if st.button("🔧 Test API Connection"):
+            try:
+                response = requests.get(f"{API_URL}/health", timeout=10)
+                if response.status_code == 200:
+                    st.success("✅ API is reachable!")
+                    st.json(response.json())
+                else:
+                    st.error(f"❌ API returned status code: {response.status_code}")
+            except Exception as e:
+                st.error(f"❌ API connection failed: {str(e)}")
     
     # Create form with real feature names
     with st.form("prediction_form"):
@@ -486,6 +499,7 @@ def show_prediction_page(api_available):
                         st.info("SHAP values not available in this response")
                 else:
                     st.error(f"❌ Prediction failed: {result}")
+                    st.error("Please check the API connection and try again.")
             else:
                 # Demo mode
                 st.markdown("### 🎯 Demo Prediction Results")
