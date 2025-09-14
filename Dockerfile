@@ -2,12 +2,16 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies including OpenMP for LightGBM
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     libgomp1 \
+    libomp-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Verify libgomp is installed
+RUN ldconfig -p | grep libgomp
 
 # Copy requirements and install Python dependencies
 COPY requirements.txt ./requirements.txt
