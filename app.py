@@ -1,7 +1,3 @@
-# Diabetes Readmission Prediction Dashboard - FRESH DEPLOYMENT
-# Created: Sun Sep 14 13:42:36 BST 2025
-# This file is guaranteed to have NO problematic imports
-
 # Diabetes Readmission Prediction Dashboard - DEPLOYMENT VERSION
 # This file is specifically for Streamlit Cloud deployment
 # All problematic imports removed - NO lime, shap, scipy, seaborn, matplotlib
@@ -1084,4 +1080,3 @@ def show_feature_analysis_page():
 
 if __name__ == "__main__":
     main()
-FORCE REFRESH Sun Sep 14 13:38:20 BST 2025
