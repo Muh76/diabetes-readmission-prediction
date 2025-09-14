@@ -103,6 +103,68 @@ def get_prediction(data):
     except Exception as e:
         return False, str(e)
 
+def create_simplified_prediction(time_in_hospital, num_medications, number_diagnoses, age):
+    """Create a simplified prediction based on input features"""
+    # This is a simplified rule-based prediction for demo purposes
+    # In reality, you'd need all 305 features for accurate prediction
+    
+    # Calculate risk score based on input features
+    risk_score = 0
+    
+    # Time in hospital (longer stay = higher risk)
+    if time_in_hospital >= 10:
+        risk_score += 0.3
+    elif time_in_hospital >= 7:
+        risk_score += 0.2
+    elif time_in_hospital >= 5:
+        risk_score += 0.1
+    
+    # Number of medications (more medications = higher risk)
+    if num_medications >= 20:
+        risk_score += 0.3
+    elif num_medications >= 15:
+        risk_score += 0.2
+    elif num_medications >= 10:
+        risk_score += 0.1
+    
+    # Number of diagnoses (more diagnoses = higher risk)
+    if number_diagnoses >= 8:
+        risk_score += 0.3
+    elif number_diagnoses >= 5:
+        risk_score += 0.2
+    elif number_diagnoses >= 3:
+        risk_score += 0.1
+    
+    # Age (older patients = higher risk)
+    age_risk = {
+        "[70-80)": 0.3, "[80-90)": 0.4, "[90-100)": 0.5,
+        "[60-70)": 0.2, "[50-60)": 0.1, "[40-50)": 0.05,
+        "[30-40)": 0.02, "[20-30)": 0.01, "[10-20)": 0.01, "[0-10)": 0.01
+    }
+    risk_score += age_risk.get(age, 0.1)
+    
+    # Normalize to probability (0-1)
+    probability = min(risk_score, 0.95)  # Cap at 95%
+    prediction = 1 if probability > 0.5 else 0
+    
+    # Determine risk level
+    if probability > 0.7:
+        risk_level = "High"
+    elif probability > 0.4:
+        risk_level = "Medium"
+    else:
+        risk_level = "Low"
+    
+    return {
+        "prediction": prediction,
+        "probability": probability,
+        "risk_level": risk_level,
+        "confidence": abs(probability - 0.5) * 2,  # Confidence based on distance from 0.5
+        "model_version": "1.0.0-demo",
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "note": "Simplified prediction based on input features. For accurate prediction, all 305 model features are required."
+    }
+
 def create_performance_chart():
     """Create model performance visualization"""
     metrics = ['ROC-AUC', 'Accuracy', 'Precision', 'Recall', 'F1-Score']
@@ -292,11 +354,6 @@ def show_prediction_page(api_available):
     """Show prediction page"""
     st.markdown('<h2 class="sub-header">Patient Risk Prediction</h2>', unsafe_allow_html=True)
     
-    if not api_available:
-        st.error("❌ API is currently unavailable. Please try again later.")
-        st.info("💡 **Demo Mode**: The prediction form below shows the interface, but predictions are simulated.")
-        return
-    
     # Prediction form
     with st.form("prediction_form"):
         st.markdown("### 📝 Patient Information")
@@ -350,7 +407,15 @@ def show_prediction_page(api_available):
             
             # Get prediction
             with st.spinner("🔄 Analyzing patient data..."):
-                success, result = get_prediction(patient_data)
+                if api_available:
+                    success, result = get_prediction(patient_data)
+                    if success:
+                        # Add note about simplified prediction
+                        result["note"] = "⚠️ Note: This prediction uses simplified feature mapping. For full accuracy, all 305 model features are required."
+                else:
+                    # Use simplified prediction
+                    success = True
+                    result = create_simplified_prediction(time_in_hospital, num_medications, number_diagnoses, age)
             
             if success:
                 st.success("✅ Prediction completed successfully!")
@@ -388,6 +453,10 @@ def show_prediction_page(api_available):
                     st.info("ℹ️ **Medium Risk**: This patient has a moderate risk of readmission. Standard follow-up care is recommended.")
                 else:
                     st.success("✅ **Low Risk**: This patient has a low risk of readmission. Routine care should be sufficient.")
+                
+                # Show note about prediction method
+                if 'note' in result:
+                    st.info(result['note'])
                 
             else:
                 st.error(f"❌ Prediction failed: {result}")
@@ -513,6 +582,14 @@ def show_technical_details_page():
     - **Precision**: {ACTUAL_METRICS['precision']:.4f}
     - **Recall**: {ACTUAL_METRICS['recall']:.4f}
     - **F1-Score**: {ACTUAL_METRICS['f1_score']:.4f}
+    """)
+    
+    # Important note about API limitations
+    st.markdown("### ⚠️ API Limitations")
+    st.warning("""
+    **Current API Limitation**: The deployed API only accepts 4 input features but the model requires 305 features. 
+    This means predictions may not reflect the full model's accuracy. For production use, the API should be 
+    updated to accept all required features or use a simplified model trained on the 4 available features.
     """)
 
 if __name__ == "__main__":
