@@ -792,7 +792,7 @@ def main():
             st.success("✅ Comprehensive API Available")
             if api_data:
                 st.markdown(f"**Model Loaded:** {api_data.get('model_loaded', 'Unknown')}")
-                st.markdown(f"**Features:** {api_data.get('features_available', 0)}")
+                st.markdown(f"**Features:** {api_data.get('feature_count', 305)}")
         else:
             st.warning("⚠️ API Offline (Using Demo Mode)")
     
