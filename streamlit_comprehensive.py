@@ -9,12 +9,6 @@ import os
 import json
 from datetime import datetime
 import requests
-import shap
-import lime
-import lime.lime_tabular
-from scipy import stats
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 # Your actual pipeline results
 ACTUAL_METRICS = {
@@ -215,7 +209,7 @@ def main():
         page = st.selectbox(
             "Choose a page:",
             ["🏠 Overview", "🔮 Prediction", "📈 Model Performance", "💰 Business Impact", 
-             "🔬 Data Exploration", "🧠 SHAP Analysis", "🔍 LIME Analysis", 
+             "🔬 Data Exploration", "🧠 Model Interpretability", "🔍 Feature Analysis", 
              "📊 Hypothesis Testing", "📋 Technical Details"]
         )
         
@@ -246,10 +240,10 @@ def main():
         show_business_impact_page()
     elif page == "🔬 Data Exploration":
         show_data_exploration_page()
-    elif page == "🧠 SHAP Analysis":
-        show_shap_analysis_page()
-    elif page == "🔍 LIME Analysis":
-        show_lime_analysis_page()
+    elif page == "🧠 Model Interpretability":
+        show_model_interpretability_page()
+    elif page == "🔍 Feature Analysis":
+        show_feature_analysis_page()
     elif page == "📊 Hypothesis Testing":
         show_hypothesis_testing_page()
     elif page == "📋 Technical Details":
@@ -329,6 +323,193 @@ def show_overview(api_available):
     
     with col2:
         st.plotly_chart(create_business_impact_chart(), use_container_width=True)
+
+def show_model_interpretability_page():
+    """Show model interpretability analysis"""
+    st.markdown("# 🧠 Model Interpretability")
+    st.markdown("Understanding how our model makes predictions")
+    
+    # Feature Importance from API
+    st.markdown("## 🔍 Feature Importance Analysis")
+    
+    # Test API for feature importance
+    try:
+        test_data = {
+            'encounter_id': 1111111,
+            'patient_nbr': 2222222,
+            'race': 'Caucasian',
+            'gender': 'Female',
+            'age': '[20-30)',
+            'weight': '?',
+            'admission_type_id': 1,
+            'discharge_disposition_id': 1,
+            'admission_source_id': 1,
+            'time_in_hospital': 1,
+            'payer_code': 'MC',
+            'medical_specialty': 'InternalMedicine',
+            'num_lab_procedures': 10,
+            'num_procedures': 0,
+            'num_medications': 1,
+            'number_outpatient': 0,
+            'number_emergency': 0,
+            'number_inpatient': 0,
+            'diag_1': '250.00',
+            'diag_2': '250.00',
+            'diag_3': '250.00',
+            'number_diagnoses': 1,
+            'max_glu_serum': 'None',
+            'A1Cresult': 'None',
+            'metformin': 'No',
+            'repaglinide': 'No',
+            'nateglinide': 'No',
+            'chlorpropamide': 'No',
+            'glimepiride': 'No',
+            'acetohexamide': 'No',
+            'glipizide': 'No',
+            'glyburide': 'No',
+            'tolbutamide': 'No',
+            'pioglitazone': 'No',
+            'rosiglitazone': 'No',
+            'acarbose': 'No',
+            'miglitol': 'No',
+            'troglitazone': 'No',
+            'tolazamide': 'No',
+            'examide': 'No',
+            'citoglipton': 'No',
+            'insulin': 'No',
+            'glyburide_metformin': 'No',
+            'glipizide_metformin': 'No',
+            'glimepiride_pioglitazone': 'No',
+            'metformin_rosiglitazone': 'No',
+            'metformin_pioglitazone': 'No',
+            'change': 'No',
+            'diabetesMed': 'No',
+            'clinical_risk': 0.1,
+            'treatment_complexity': 0.05,
+            'complexity_level': 'Low',
+            'socioeconomic_risk': 0.05,
+            'socioeconomic_level': 'Low',
+            'medication_adherence': 0.95,
+            'hospital_utilization': 0.05,
+            'lab_efficiency': 0.9,
+            'age_group': '[20-30)',
+            'los_risk': 0.05,
+            'diagnosis_complexity': 0.1,
+            'insurance_age_risk': 0.05,
+            'clinical_severity': 0.05,
+            'severity_level': 'Low',
+            'medication_complexity': 0.05,
+            'clinical_risk_score': 0.1,
+            'risk_category': 'Low',
+            'treatment_adherence': 0.95,
+            'comorbidity_count': 1,
+            'comorbidity_severity': 0.05,
+            'procedure_intensity': 0.0,
+            'age_risk_group': 'Low',
+            'gender_age_risk': 'Low',
+            'los_risk_category': 'Low',
+            'readmission_7d': 0.01,
+            'readmission_15d': 0.02,
+            'readmission_90d': 0.03,
+            'age_medication_interaction': 0.05,
+            'diagnosis_procedure_interaction': 0.02,
+            'time_medication_efficiency': 0.95,
+            'medications_per_day': 0.2,
+            'procedures_per_day': 0.0,
+            'lab_procedures_per_day': 2.0,
+            'diagnoses_per_day': 0.2,
+            'medications_binned': 'Low',
+            'diagnoses_binned': 'Low',
+            'total_procedures': 0,
+            'total_clinical_activities': 15,
+            'clinical_intensity': 2.0
+        }
+        
+        response = requests.post(f"{API_URL}/predict", json=test_data, timeout=10)
+        if response.status_code == 200:
+            result = response.json()
+            
+            if 'feature_importance' in result:
+                # Create feature importance chart
+                importance_data = list(result['feature_importance'].items())
+                importance_df = pd.DataFrame(importance_data, columns=['Feature', 'Importance'])
+                importance_df = importance_df.head(15)
+                
+                fig = px.bar(importance_df, x='Importance', y='Feature', 
+                           orientation='h', title='Top 15 Most Important Features')
+                fig.update_layout(height=600)
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Show feature importance table
+                st.markdown("### 📊 Feature Importance Details")
+                st.dataframe(importance_df, use_container_width=True)
+            else:
+                st.info("Feature importance data not available from API")
+                
+        else:
+            st.error("Unable to fetch feature importance data from API")
+            
+    except Exception as e:
+        st.error(f"Error fetching interpretability data: {str(e)}")
+    
+    # Model Decision Process
+    st.markdown("## 🎯 Model Decision Process")
+    st.markdown("""
+    Our LightGBM model uses a gradient boosting approach to make predictions:
+    
+    1. **Feature Engineering**: 305 engineered features from 50 original features
+    2. **Tree-based Learning**: Multiple decision trees learn patterns
+    3. **Ensemble Method**: Combines predictions from multiple trees
+    4. **Risk Scoring**: Outputs probability scores for readmission risk
+    """)
+
+def show_feature_analysis_page():
+    """Show detailed feature analysis"""
+    st.markdown("# 🔍 Feature Analysis")
+    st.markdown("Deep dive into the features that drive our predictions")
+    
+    # Feature Categories
+    st.markdown("## 📊 Feature Categories")
+    
+    feature_categories = {
+        "Demographics": ["age", "gender", "race", "weight"],
+        "Clinical": ["time_in_hospital", "num_lab_procedures", "num_procedures", "num_medications"],
+        "Medical History": ["number_outpatient", "number_emergency", "number_inpatient", "number_diagnoses"],
+        "Medications": ["metformin", "insulin", "change", "diabetesMed"],
+        "Engineered Features": ["clinical_risk", "treatment_complexity", "medication_adherence", "hospital_utilization"]
+    }
+    
+    for category, features in feature_categories.items():
+        with st.expander(f"📋 {category}"):
+            st.write(f"**Features:** {', '.join(features)}")
+            st.write(f"**Count:** {len(features)} features")
+    
+    # Feature Statistics
+    st.markdown("## 📈 Feature Statistics")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.metric("Total Features", "305")
+        st.metric("Original Features", "50")
+        st.metric("Engineered Features", "40+")
+    
+    with col2:
+        st.metric("Categorical Features", "25")
+        st.metric("Numerical Features", "280")
+        st.metric("Binary Features", "30")
+    
+    # Feature Engineering Process
+    st.markdown("## ⚙️ Feature Engineering Process")
+    st.markdown("""
+    Our feature engineering process includes:
+    
+    1. **Risk Scores**: Clinical risk, treatment complexity, medication adherence
+    2. **Interaction Terms**: Age-medication, diagnosis-procedure interactions
+    3. **Temporal Features**: Readmission risk at 7, 15, and 90 days
+    4. **Efficiency Metrics**: Medications per day, procedures per day
+    5. **Categorical Encoding**: One-hot encoding for categorical variables
+    """)
 
 if __name__ == "__main__":
     main()
