@@ -49,7 +49,8 @@ REAL_FEATURE_NAMES = [
 
 # API Configuration
 import os
-API_URL = os.getenv("API_URL", "http://localhost:8000")
+# Use your Google Cloud Run API URL for production, localhost for development
+API_URL = os.getenv("API_URL", "https://diabetes-readmission-api-5wwrqt3oua-uc.a.run.app")
 
 # Page configuration
 st.set_page_config(
@@ -430,11 +431,19 @@ def show_prediction_page(api_available):
                     
                     # Clinical insights
                     st.markdown("### 💡 Clinical Insights")
-                    for insight in result['clinical_insights']:
-                        st.info(f"• {insight}")
+                    if 'clinical_insights' in result and result['clinical_insights']:
+                        for insight in result['clinical_insights']:
+                            st.info(f"• {insight}")
+                    else:
+                        # Generate insights based on prediction
+                        if result['prediction'] == 1:
+                            st.info("• High readmission risk - consider enhanced discharge planning")
+                            st.info("• Patient may benefit from post-discharge monitoring")
+                        else:
+                            st.info("• Low readmission risk - routine care should be sufficient")
                     
                     # Feature importance
-                    if result['feature_importance']:
+                    if 'feature_importance' in result and result['feature_importance']:
                         st.markdown("### 🔍 Top Feature Importance")
                         importance_df = pd.DataFrame(list(result['feature_importance'].items()), columns=['Feature', 'Importance'])
                         importance_df = importance_df.head(10)
@@ -443,9 +452,12 @@ def show_prediction_page(api_available):
                                    title="Top 10 Most Important Features")
                         fig.update_layout(height=400)
                         st.plotly_chart(fig, use_container_width=True)
+                    else:
+                        st.markdown("### 🔍 Feature Importance")
+                        st.info("Feature importance data not available in this response")
                     
                     # SHAP values
-                    if result['shap_values']:
+                    if 'shap_values' in result and result['shap_values']:
                         st.markdown("### 🧠 SHAP Analysis")
                         shap_df = pd.DataFrame(list(result['shap_values'].items()), columns=['Feature', 'SHAP Value'])
                         shap_df = shap_df.head(10)
@@ -454,6 +466,9 @@ def show_prediction_page(api_available):
                                    title="Top 10 SHAP Values (Feature Contributions)")
                         fig.update_layout(height=400)
                         st.plotly_chart(fig, use_container_width=True)
+                    else:
+                        st.markdown("### 🧠 SHAP Analysis")
+                        st.info("SHAP values not available in this response")
                 else:
                     st.error(f"❌ Prediction failed: {result}")
             else:
